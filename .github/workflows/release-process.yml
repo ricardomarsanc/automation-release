@@ -48,7 +48,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          branch: master"release/v${{ github.event.inputs.versionName }}"
+          branch: master
           base: "release/v${{ github.event.inputs.versionName }}"
           commit-message: release branch created
           title: v${{ github.event.inputs.versionName }} into main
