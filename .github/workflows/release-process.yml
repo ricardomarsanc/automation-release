@@ -45,11 +45,11 @@ jobs:
           git merge origin/master
           npm version ${{ github.event.inputs.versionName }} --allow-same-version
           git push --force origin release/v${{ github.event.inputs.versionName }}
-      # - name: Create Pull Request
-      #   uses: peter-evans/create-pull-request@v4
-      #   with:
-      #     branch: "release/v${{ github.event.inputs.versionName }}"
-      #     base: main
-      #     commit-message: release branch created
-      #     title: v${{ github.event.inputs.versionName }} into main
-      #     body: Release branch created by workflow
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          branch: "release/v${{ github.event.inputs.versionName }}"
+          base: master
+          commit-message: release branch created
+          title: v${{ github.event.inputs.versionName }} into main
+          body: Release branch created by workflow
