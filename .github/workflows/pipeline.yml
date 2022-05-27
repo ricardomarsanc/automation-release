@@ -1,0 +1,124 @@
+name: Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types: 
+      - opened
+      - synchronize
+
+jobs:
+  cancel_ongoing_flows:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Cancel previous ongoing build
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+  lint:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with: 
+          cache: "npm"
+          node-version: "14"
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run eslint
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Deploy
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with: 
+          cache: "npm"
+          node-version: "14"
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build 
+      - name: Build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist
+  test:
+    needs: [lint, build]
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Deploy
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with: 
+          cache: "npm"
+          node-version: "14"
+      - name: Install dependencies
+        run: npm ci
+      - name: Get build artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
+      - name: Test
+        run: npm test
+  e2e_test:
+    needs: [lint, build]
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Deploy
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with: 
+          cache: "npm"
+          node-version: "14"
+      - name: Install dependencies
+        run: npm ci
+      - name: Get build artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
+      - name: E2E Tests
+        uses: cypress-io/github-action@v2
+        with: 
+          command: npm run test:e2e
+          start: npm run start-test
+          wait-on: http://localhost:5000
+  deploy:
+    needs: [test, e2e_test]
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Deploy to Heroku
+        if: ${{ github.event_name == 'push' }} 
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP}}
+          heroku_email: ${{secrets.HEROKU_API_EMAIL}}
+          healthcheck: "https://${{secrets.HEROKU_APP}}.herokuapp.com/health"
+          rollbackonhealthcheckfailed: true
+
