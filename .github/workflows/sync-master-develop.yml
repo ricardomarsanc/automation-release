@@ -23,7 +23,7 @@ jobs:
           git fetch --all
           git checkout -B sync-master-develop origin/develop
           git merge origin/master
-          git push origin sync-master-develop
+          git push --force origin sync-master-develop
       - name: Create Pull Request
         uses: actions/github-script@v6
         with:
