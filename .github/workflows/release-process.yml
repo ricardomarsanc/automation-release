@@ -48,8 +48,8 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          branch: "release/v${{ github.event.inputs.versionName }}"
-          base: master
+          branch: master"release/v${{ github.event.inputs.versionName }}"
+          base: "release/v${{ github.event.inputs.versionName }}"
           commit-message: release branch created
           title: v${{ github.event.inputs.versionName }} into main
           body: Release branch created by workflow
