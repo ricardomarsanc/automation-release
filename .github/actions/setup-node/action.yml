@@ -1,0 +1,15 @@
+name: 'Setup node'
+description: Setup node to run the workflow
+
+inputs:
+  node-version:
+    description: "Node Version"
+    required: false
+    default: '14'
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}

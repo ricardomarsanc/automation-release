@@ -1,0 +1,55 @@
+name: Create release branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionName:
+        required: true
+        description: "Enter the new version number"
+
+jobs:
+  # current-version:
+  #   runs-on: ubuntu-20.04
+  #   outputs:
+  #     version: ${{ steps.vars.outputs.version }}
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Node Setup
+  #       uses: ./.github/actions/setup-node
+  #     - name: Set version as output
+  #       id: vars
+  #       run: |
+  #         number=`grep version package.json`
+  #         echo "::set-output name=version::$number"
+
+  create-release:
+    # needs: [current-version]
+    runs-on: ubuntu-20.04
+    # if: github.event.inputs.versionName >= needs.current-version.outputs.version
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Node Setup
+        uses: ./.github/actions/setup-node
+      - name: Create release branch
+        run: |
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git config user.name "${{ github.actor }}"
+          git fetch --all
+          git checkout -B release/v${{ github.event.inputs.versionName }} origin/develop
+          git merge origin/master
+          npm version ${{ github.event.inputs.versionName }} --allow-same-version
+          git push --force origin release/v${{ github.event.inputs.versionName }}
+      # - name: Create Pull Request
+      #   uses: peter-evans/create-pull-request@v4
+      #   with:
+      #     branch: "release/v${{ github.event.inputs.versionName }}"
+      #     base: main
+      #     commit-message: release branch created
+      #     title: v${{ github.event.inputs.versionName }} into main
+      #     body: Release branch created by workflow
