@@ -26,6 +26,19 @@ jobs:
           ver="$(node -p "require('./package.json').version")"
           newver='${{ github.event.inputs.versionName }}'
           stopWorkflow=false
+
+          IFS='.' read -ra VER_ARR <<< "$newver"
+
+          # FIXME: For now checking the version number and allowing just x.x.x
+
+          if [ "${#VER_ARR[@]}" != 3 ]; then
+            echo "Invalid version format (Format allowed: x.x.x)"
+            stopWorkflow=true
+          fi
+
+          # FIXME: There are a few bugs when comparing some version formats
+          # (a.b vs a.b.0 should be the same but it says that the first one is smaller)
+
           if [ "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)" = "$ver" ]; then 
             if [ "$(printf '%s\n' "$ver")" = "$newver" ]; then 
               echo "Equal"
