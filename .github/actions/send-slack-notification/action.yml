@@ -8,6 +8,7 @@ inputs:
     default: "test"
   message:
     description: "Message to send"
+    type: string
     required: false
     default: "Custom message"
 
@@ -20,5 +21,5 @@ runs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_WEBHOOK: "https://hooks.slack.com/services/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"
-        SLACK_MESSAGE: ${{ github.event.inputs.message }}
+        SLACK_MESSAGE: ${{ inputs.message }}
         SLACK_CHANNEL: "release-announcements"
