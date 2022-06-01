@@ -26,6 +26,8 @@ jobs:
           ver=`grep version package.json`
           newver='${{ github.event.inputs.versionName }}'
           stopWorkflow=false
+          echo "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)"
+          echo "$(printf '%s\n' "$newver")"
           if [ "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)" = "$ver" ]; then 
             if [ "$(printf '%s\n' "$ver")" = "$newver" ]; then 
               echo "Equal"
