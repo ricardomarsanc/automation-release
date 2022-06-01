@@ -19,6 +19,5 @@ runs:
     - name: Slack Notification
       uses: rtCamp/action-slack-notify@v2
       env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_CHANNEL: ${{ github.event.inputs.webhook-url }}
+        SLACK_WEBHOOK: "https://hooks.slack.com/services/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"
         SLACK_MESSAGE: ${{ github.event.inputs.message }}
