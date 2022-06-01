@@ -8,7 +8,7 @@ on:
         description: "Enter the new version number"
 
 jobs:
-  current-version:
+  current_version:
     runs-on: ubuntu-20.04
     outputs:
       stop: ${{ steps.vars.outputs.stop }}
@@ -39,8 +39,8 @@ jobs:
           fi
           echo "::set-output name=stop::$stopWorkflow"
   another-job:
-    needs: [current-version]
-    if: needs.current-version.outputs.stop != 'false'
+    needs: [current_version]
+    if: ${{ needs.current_version.outputs.stop }} != 'false'
     runs-on: ubuntu-20.04
     steps:
       - name: Echo
