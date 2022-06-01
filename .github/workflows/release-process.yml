@@ -23,7 +23,7 @@ jobs:
         id: vars
         shell: bash
         run: |
-          ver="$(grep version package.json)"
+          ver="$(node -p "require('./package.json').version")"
           newver='${{ github.event.inputs.versionName }}'
           stopWorkflow=false
           echo "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)"
