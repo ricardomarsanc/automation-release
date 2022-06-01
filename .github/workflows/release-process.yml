@@ -60,6 +60,8 @@ jobs:
     name: Send Slack Notification for initiated release
     runs-on: ubuntu-20.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Send Slack notification
         uses: ./.github/actions/send-slack-notification
   # create-release:
