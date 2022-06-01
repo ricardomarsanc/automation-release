@@ -17,9 +17,15 @@ runs:
   steps:
     - name: Checkout Code
       uses: actions/checkout@v3
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2
+    # - name: Slack Notification
+    #   uses: rtCamp/action-slack-notify@v2
+    #   env:
+    #     SLACK_WEBHOOK: "https://hooks.slack.com/services/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"
+    #     SLACK_MESSAGE: ${{ inputs.message }}
+    #     SLACK_CHANNEL: "release-announcements"
+    - name: Notify slack
       env:
-        SLACK_WEBHOOK: "https://hooks.slack.com/services/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"
-        SLACK_MESSAGE: ${{ inputs.message }}
-        SLACK_CHANNEL: "release-announcements"
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: pullreminders/slack-action@master
+      with:
+        args: '{\"channel\":\"C1234567890\",\"text\":\"Hello world\"}'
