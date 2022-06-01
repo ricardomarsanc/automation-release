@@ -5,10 +5,26 @@ inputs:
   webhook:
     description: "Webhook URL for specific channel"
     required: true
+  title:
+    description: "Notification title"
+    required: false
+    default: "Github Actions Notification"
   message:
     description: "Message to send"
     required: false
-    default: "Custom message"
+    default: "N/A"
+  channel:
+    description: "Channel"
+    required: false
+    default: "general"
+  icon:
+    description: "Icon"
+    required: false
+    default: "https://github.com/syltek.png?size=48"
+  username:
+    description: "Name of the user"
+    required: false
+    default: "announcementsBot"
 
 runs:
   using: "composite"
@@ -20,10 +36,9 @@ runs:
       env:
         SLACK_WEBHOOK: ${{ inputs.webhook }}
         SLACK_MESSAGE: ${{ inputs.message }}
-        SLACK_CHANNEL: release-announcements
-    # - name: Notify slack
-    #   uses: 8398a7/action-slack@v3
-    #   with:
-    #     status: ${{ job.status }}
-    #   env:
-    #     SLACK_WEBHOOK_URL: ${{ inputs.webhook }}
+        SLACK_CHANNEL: ${{ inputs.channel }}
+        SLACK_ICON: ${{ inputs.icon }}
+        SLACK_TITLE: ${{ inputs.title}}
+        SLACK_USERNAME: ${{ inputs.username }}
+        SLACK_COLOR: ${{ job.status }}
+        MSG_MINIMAL: "true"
