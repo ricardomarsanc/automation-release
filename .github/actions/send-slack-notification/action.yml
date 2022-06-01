@@ -2,10 +2,9 @@ name: "Send Slack Notification"
 description: Send a slack notification for a specific channel
 
 inputs:
-  webhook-url:
+  webhook:
     description: "Webhook URL for specific channel"
-    required: false
-    default: "test"
+    required: true
   message:
     description: "Message to send"
     required: false
@@ -23,8 +22,8 @@ runs:
     #     SLACK_MESSAGE: ${{ inputs.message }}
     #     SLACK_CHANNEL: "release-announcements"
     - name: Notify slack
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      uses: pullreminders/slack-action@master
+      uses: 8398a7/action-slack@v3
       with:
-        args: '{\"channel\":\"C03HSTWM3HR\",\"text\":\"Hello world\"}'
+        status: ${{ job.status }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
