@@ -23,14 +23,14 @@ jobs:
         id: vars
         shell: bash
         run: |
-          newver=`grep version package.json`
-          currentver='${{ github.event.inputs.versionName }}'
+          ver=`grep version package.json`
+          newver='${{ github.event.inputs.versionName }}'
           stopWorkflow=false
-          if [ "$(printf '%s\n' "$newver" "$currentver" | sort -V | head -n1)" = "$newver" ]; then 
-                  echo "Greater than or equal to ${newver}"
+          if [ "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)" = "$ver" ]; then 
+                  echo "Greater than or equal to ${ver}"
                   stopWorkflow=true
           else
-                  echo "Less than ${newver}"
+                  echo "Less than ${ver}"
           fi
           echo "::set-output name=stop::$stopWorkflow"
   another-job:
