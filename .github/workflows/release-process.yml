@@ -65,11 +65,9 @@ jobs:
       # - name: Send Slack notification
       #   uses: ./.github/actions/send-slack-notification
       - name: Notify slack
+        uses: 8398a7/action-slack@v3
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: pullreminders/slack-action@master
-        with:
-          args: '{\"channel\":\"C03HSTWM3HR\",\"text\":\"Hello world\"}'
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   # create-release:
   #   name: Create release branch
   #   needs: [version_check]
