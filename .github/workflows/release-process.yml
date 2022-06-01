@@ -26,14 +26,16 @@ jobs:
           ver=`grep version package.json`
           newver='${{ github.event.inputs.versionName }}'
           stopWorkflow=false
-          echo "$(printf '%s\n' "$newver" "$ver" | sort -V | head -n1)"
-          echo "${ver}"
-          echo "${newver}"
-          if [ "$(printf '%s\n' "$newver" "$ver" | sort -V | head -n1)" <= "$ver" ]; then 
-                  echo "Less than or equal to ${ver}"
-                  stopWorkflow=true
+          if [ "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)" = "$ver" ]; then 
+            if [ "$(printf '%s\n' "$ver")" = "$newver" ]; then 
+              echo "Equal"
+              stopWorkflow=true
+            else
+              echo "Greater"
+            fi
           else
-                  echo "Greater than ${ver}"
+            echo "Less than ${ver}"
+            stopWorkflow=true
           fi
           echo "::set-output name=stop::$stopWorkflow"
   another-job:
