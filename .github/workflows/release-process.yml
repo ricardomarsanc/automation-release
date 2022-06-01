@@ -68,7 +68,7 @@ jobs:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           message: "Release process has started"
           channel: release-announcements
-          title: "[Initiated] Release ${{ inputs.version }}"
+          title: "[Initiated] Release ${{ github.event.inputs.version }}"
   # create-release:
   #   name: Create release branch
   #   needs: [version_check]
