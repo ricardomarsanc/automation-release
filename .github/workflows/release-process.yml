@@ -26,8 +26,6 @@ jobs:
           ver="$(node -p "require('./package.json').version")"
           newver='${{ github.event.inputs.versionName }}'
           stopWorkflow=false
-          echo "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)"
-          echo "$(printf '%s\n' "$newver")"
           if [ "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)" = "$ver" ]; then 
             if [ "$(printf '%s\n' "$ver")" = "$newver" ]; then 
               echo "Equal"
@@ -46,7 +44,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Echo
-        run: echo "Hello"
+        run: echo "${{ needs.current_version.outputs.stop }}"
 
   # create-release:
   #   # needs: [current-version]
