@@ -22,8 +22,8 @@ jobs:
       - name: Set version as output
         id: vars
         run: |
-          currentver="$(grep version package.json)"
-          newver="${{ github.event.inputs.versionName }}"
+          newver="$(grep version package.json)"
+          currentver="${{ github.event.inputs.versionName }}"
           stopWorkflow=false
           if [ "$(printf '%s\n' "$newver" "$currentver" | sort -V | head -n1)" = "$newver" ]; then 
                   echo "Greater than or equal to ${newver}"
