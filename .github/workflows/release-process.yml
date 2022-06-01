@@ -40,7 +40,7 @@ jobs:
           echo "::set-output name=stop::$stopWorkflow"
   another-job:
     needs: [current_version]
-    if: ${{ needs.current_version.outputs.stop }} != 'false'
+    if: ${{ needs.current_version.outputs.stop }} != 'true'
     runs-on: ubuntu-20.04
     steps:
       - name: Echo
