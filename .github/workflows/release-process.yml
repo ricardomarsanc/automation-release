@@ -53,13 +53,13 @@ jobs:
           fi
           echo "::set-output name=stop::$stopWorkflow"
       - name: Show Status Message
-        if: ${{ needs.version_check.outputs.stop == 'true' }}
+        if: ${{ steps.checkVersion.outputs.stop == 'true' }}
         run: |
           echo "### Failed ❌" >> $GITHUB_STEP_SUMMARY
           echo "The new version does not follow the conventions or is not higher than the current one, please review workflow" >> $GITHUB_STEP_SUMMARY
           echo "Allowed formats: (x.x.x)" >> $GITHUB_STEP_SUMMARY
       - name: Exit Workflow
-        if: ${{ needs.version_check.outputs.stop == 'true' }}
+        if: ${{ steps.checkVersion.outputs.stop == 'true' }}
         run: exit 1
   create-release:
     name: Create release branch
