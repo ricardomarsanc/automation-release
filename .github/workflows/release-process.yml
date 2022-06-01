@@ -21,9 +21,10 @@ jobs:
         uses: ./.github/actions/setup-node
       - name: Set version as output
         id: vars
+        shell: bash
         run: |
           newver=`grep version package.json`
-          currentver="${{ github.event.inputs.versionName }}"
+          currentver='${{ github.event.inputs.versionName }}'
           stopWorkflow=false
           if [ "$(printf '%s\n' "$newver" "$currentver" | sort -V | head -n1)" = "$newver" ]; then 
                   echo "Greater than or equal to ${newver}"
