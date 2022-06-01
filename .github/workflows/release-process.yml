@@ -26,7 +26,7 @@ jobs:
           ver=`grep version package.json`
           newver='${{ github.event.inputs.versionName }}'
           stopWorkflow=false
-          if [ "$(printf '%s\n' "$newver" "$ver" | sort -V | head -n1)" > "$newver" ]; then 
+          if [ "$(printf '%s\n' "$newver" "$ver" | sort -V | head -n1)" > "$ver" ]; then 
                   echo "Greater than ${ver}"
                   stopWorkflow=true
           else
