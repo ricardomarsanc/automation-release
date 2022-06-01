@@ -1,0 +1,24 @@
+name: "Send Slack Notification"
+description: Send a slack notification for a specific channel
+
+inputs:
+  webhook-url:
+    description: "Webhook URL for specific channel"
+    required: false
+    default: "test"
+  message:
+    description: "Message to send"
+    required: false
+    default: "Custom message"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_CHANNEL: ${{ github.event.inputs.webhook-url }}
+        SLACK_MESSAGE: ${{ github.event.inputs.message }}
