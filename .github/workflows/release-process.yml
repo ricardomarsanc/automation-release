@@ -22,7 +22,7 @@ jobs:
       - name: Set version as output
         id: vars
         run: |
-          newver="$(grep version package.json)"
+          newver=`grep version package.json`
           currentver="${{ github.event.inputs.versionName }}"
           stopWorkflow=false
           if [ "$(printf '%s\n' "$newver" "$currentver" | sort -V | head -n1)" = "$newver" ]; then 
