@@ -94,16 +94,14 @@ jobs:
         with:
           script: |
             const { repo, owner } = context.repo;
-            const body = require('./RELEASE.md')
+            const body = require('./RELEASE.md');
             const result = await github.rest.pulls.create({
               title: '[CI/CD] Release v${{ github.event.inputs.version }}',
               owner,
               repo,
               head: 'release/v${{ github.event.inputs.version }}',
               base: 'master',
-              body: [
-                body
-              ].join('\n')
+              body
             });
             github.rest.issues.addLabels({
               owner,
