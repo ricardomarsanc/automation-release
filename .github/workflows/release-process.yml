@@ -8,70 +8,50 @@ on:
         description: "Enter the new version number"
 
 jobs:
-  # version_check:
-  #   name: Version check
-  #   runs-on: ubuntu-20.04
-  #   outputs:
-  #     stop: ${{ steps.checkVersion.outputs.stop }}
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
-  #       with:
-  #         fetch-depth: 0
-  #     - name: Node Setup
-  #       uses: ./.github/actions/setup-node
-  #     - name: Validate version
-  #       id: checkVersion
-  #       shell: bash
-  #       run: |
-  #         ver="$(node -p "require('./package.json').version")"
-  #         newver='${{ inputs.version }}'
-  #         stopWorkflow=false
-  #         IFS='.' read -ra VER_ARR <<< "$newver"
-
-  #         # FIXME: For now checking the version number and allowing just (x.x.x)
-
-  #         if [ "${#VER_ARR[@]}" != 3 ]; then
-  #           echo "Invalid version format (Format allowed: x.x.x)"
-  #           stopWorkflow=true
-  #         fi
-
-  #         # FIXME: There are a few bugs when comparing some version formats
-  #         # (a.b vs a.b.0 should be the same but it says that the first one is smaller)
-
-  #         if [ "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)" = "$ver" ]; then
-  #           if [ "$(printf '%s\n' "$ver")" = "$newver" ]; then
-  #             stopWorkflow=true
-  #           fi
-  #         else
-  #           stopWorkflow=true
-  #         fi
-  #         echo "::set-output name=stop::$stopWorkflow"
-  #     - name: Show Status Message
-  #       if: ${{ steps.checkVersion.outputs.stop == 'true' }}
-  #       run: |
-  #         echo "### Failed ❌" >> $GITHUB_STEP_SUMMARY
-  #         echo "The new version does not follow the conventions or is not higher than the current one, please review workflow" >> $GITHUB_STEP_SUMMARY
-  #         echo "Allowed formats: (x.x.x)" >> $GITHUB_STEP_SUMMARY
-  #     - name: Exit Workflow
-  #       if: ${{ steps.checkVersion.outputs.stop == 'true' }}
-  #       run: exit 1
-  # send_slack_alert:
-  #   name: Send Slack Notification for initiated release
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #     - name: Send Slack notification
-  #       uses: ./.github/actions/send-slack-notification
-  #       with:
-  #         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-  #         message: "Release process has started"
-  #         channel: release-announcements
-  #         title: "[Initiated] Release ${{ github.event.inputs.version }}"
+  version_check:
+    name: Version check
+    runs-on: ubuntu-20.04
+    outputs:
+      stop: ${{ steps.checkVersion.outputs.stop }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Node Setup
+        uses: ./.github/actions/setup-node
+      - name: Validate version
+        id: checkVersion
+        shell: bash
+        run: |
+          ver="$(node -p "require('./package.json').version")"
+          newver='${{ inputs.version }}'
+          invalidVersion=false
+          IFS='.' read -ra VER_ARR <<< "$newver"
+          if [ "${#VER_ARR[@]}" != 3 ]; then
+            echo "Invalid version format (Format allowed: x.x.x)"
+            invalidVersion=true
+          fi
+          if [ "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)" = "$ver" ]; then
+            if [ "$(printf '%s\n' "$ver")" = "$newver" ]; then
+              invalidVersion=true
+            fi
+          else
+            invalidVersion=true
+          fi
+          echo "::set-output name=stop::$invalidVersion"
+      - name: Show Status Message
+        if: ${{ steps.checkVersion.outputs.stop == 'true' }}
+        run: |
+          echo "### Failed ❌" >> $GITHUB_STEP_SUMMARY
+          echo "The new version does not follow the conventions or is not higher than the current one, please review workflow" >> $GITHUB_STEP_SUMMARY
+          echo "Allowed formats: (x.x.x)" >> $GITHUB_STEP_SUMMARY
+      - name: Exit Workflow
+        if: ${{ steps.checkVersion.outputs.stop == 'true' }}
+        run: exit 1
   create_release:
     name: Create release branch
-    # needs: [version_check]
+    needs: [version_check]
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -94,15 +74,13 @@ jobs:
         uses: chuhlomin/render-template@v1.5
         with:
           template: ./RELEASE.md
-      - name: Echo
-        run: |
-          echo "${{ steps.render_template.outputs.result }}"
       - name: Create Pull Request
+        id: create_pr
         uses: actions/github-script@v6
         with:
           script: |
             const { repo, owner } = context.repo;
-            const result = await github.rest.pulls.create({
+            const pullRequest = await github.rest.pulls.create({
               title: '[CI/CD] Release v${{ github.event.inputs.version }}',
               owner,
               repo,
@@ -113,29 +91,46 @@ jobs:
             github.rest.issues.addLabels({
               owner,
               repo,
-              issue_number: result.data.number,
+              issue_number: pullRequest.data.number,
               labels: ['release', 'automated', '${{ github.event.inputs.version }}']
             });
-  create_release_gh:
-    name: Create Github Release
-    # needs: [create_release]
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Update changelog
-        uses: thomaseizinger/keep-a-changelog-new-release@v1
-        with:
-          version: v${{ github.event.inputs.version }}
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          tag_name: v${{ github.event.inputs.version }}
-          release_name: v${{ github.event.inputs.version }}
-          body_path: ./RELEASE.md
-          draft: false
-          prerelease: false
+            return pullRequest
+      - name: Echo PR
+        run: echo "${{steps.create_pr.outputs.result}}"
+  # send_slack_alert:
+  #   needs: [create_release]
+  #   name: Send Slack Notification for new release
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Send Slack notification
+  #       uses: ./.github/actions/send-slack-notification
+  #       with:
+  #         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #         message: "New release branch created. See Pull Request [here]()"
+  #         channel: release-announcements
+  #         title: "[Initiated] Release ${{ github.event.inputs.version }}"
+  # create_release_gh:
+  #   name: Create Github Release
+  #   needs: [create_release]
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Update changelog
+  #       uses: thomaseizinger/keep-a-changelog-new-release@v1
+  #       with:
+  #         version: v${{ github.event.inputs.version }}
+  #     - name: Create Release
+  #       uses: actions/create-release@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ github.token }}
+  #       with:
+  #         tag_name: v${{ github.event.inputs.version }}
+  #         release_name: v${{ github.event.inputs.version }}
+  #         body_path: ./RELEASE.md
+  #         draft: false
+  #         prerelease: false
   # update_translations:
   #   name: Update Translations ...
   #   needs: [..., create-release]
