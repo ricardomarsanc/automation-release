@@ -100,7 +100,7 @@ jobs:
               repo,
               head: 'release/v${{ github.event.inputs.version }}',
               base: 'master',
-              body: `${./RELEASE.md}`,
+              body: [ "Sample" ].join('\n'),
             });
             github.rest.issues.addLabels({
               owner,
