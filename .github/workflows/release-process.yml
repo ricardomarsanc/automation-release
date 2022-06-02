@@ -88,7 +88,7 @@ jobs:
           git checkout -B release/v${{ github.event.inputs.version }} origin/develop
           git merge origin/master
           npm version ${{ github.event.inputs.version }} --allow-same-version
-          git push --force origin release/v${{ github.event.inputs.version }}
+          # git push --force origin release/v${{ github.event.inputs.version }}
       # - name: Create Pull Request
       #   uses: actions/github-script@v6
       #   with:
@@ -111,9 +111,9 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          commit-message: update authors
           title: "[CI/CD] Release v${{ github.event.inputs.version }}"
           body: ./RELEASE.md
+          base: master
           branch: release/v${{ github.event.inputs.version }}
   create_release_gh:
     name: Create Github Release
