@@ -100,7 +100,7 @@ jobs:
           result-encoding: string
   send_slack_alert:
     needs: [create_release]
-    name: Send Slack Notification for new release
+    name: Send Slack Notification
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -109,29 +109,29 @@ jobs:
         uses: ./.github/actions/send-slack-notification
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          message: "New release branch created. See Pull Request [here](${{ needs.create_release.outputs.pr_url }})"
+          message: New release branch created. See Pull Request [here](${{ needs.create_release.outputs.pr_url }})
           channel: release-announcements
-          title: "Release ${{ github.event.inputs.version }}"
-  # create_release_gh:
-  #   name: Create Github Release
-  #   needs: [create_release]
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Update changelog
-  #       uses: thomaseizinger/keep-a-changelog-new-release@v1
-  #       with:
-  #         version: v${{ github.event.inputs.version }}
-  #     - name: Create Release
-  #       uses: actions/create-release@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{ github.token }}
-  #       with:
-  #         tag_name: v${{ github.event.inputs.version }}
-  #         release_name: v${{ github.event.inputs.version }}
-  #         body_path: ./RELEASE.md
-  #         draft: false
-  #         prerelease: false
+          title: Release v${{ github.event.inputs.version }}
+  create_release_gh:
+    name: Create Github Release
+    needs: [create_release]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Update changelog
+        uses: thomaseizinger/keep-a-changelog-new-release@v1
+        with:
+          version: v${{ github.event.inputs.version }}
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          release_name: v${{ github.event.inputs.version }}
+          body_path: ./RELEASE.md
+          draft: false
+          prerelease: false
   # update_translations:
   #   name: Update Translations ...
   #   needs: [..., create-release]
