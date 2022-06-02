@@ -109,7 +109,7 @@ jobs:
         uses: ./.github/actions/send-slack-notification
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          message: New release branch created. See Pull Request [here](${{ needs.create_release.outputs.pr_url }})
+          message: New release branch created. See Pull Request <${{ needs.create_release.outputs.pr_url }}|here>
           channel: release-announcements
           title: Release v${{ github.event.inputs.version }}
   create_release_gh:
