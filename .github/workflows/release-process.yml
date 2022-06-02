@@ -102,7 +102,7 @@ jobs:
               head: 'release/v${{ github.event.inputs.version }}',
               base: 'master',
               body: [
-                $body
+                body
               ].join('\n')
             });
             github.rest.issues.addLabels({
