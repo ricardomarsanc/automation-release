@@ -89,25 +89,32 @@ jobs:
           git merge origin/master
           npm version ${{ github.event.inputs.version }} --allow-same-version
           git push --force origin release/v${{ github.event.inputs.version }}
+      # - name: Create Pull Request
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       const { repo, owner } = context.repo;
+      #       const result = await github.rest.pulls.create({
+      #         title: '[CI/CD] Release v${{ github.event.inputs.version }}',
+      #         owner,
+      #         repo,
+      #         head: 'release/v${{ github.event.inputs.version }}',
+      #         base: 'master',
+      #         body: JSON.stringify({body: require('./RELEASE.md'}),
+      #       });
+      #       github.rest.issues.addLabels({
+      #         owner,
+      #         repo,
+      #         issue_number: result.data.number,
+      #         labels: ['release', 'automated', '${{ github.event.inputs.version }}']
+      #       });
       - name: Create Pull Request
-        uses: actions/github-script@v6
+        uses: peter-evans/create-pull-request@v4
         with:
-          script: |
-            const { repo, owner } = context.repo;
-            const result = await github.rest.pulls.create({
-              title: '[CI/CD] Release v${{ github.event.inputs.version }}',
-              owner,
-              repo,
-              head: 'release/v${{ github.event.inputs.version }}',
-              base: 'master',
-              body: JSON.stringify({body: require('./RELEASE.md'}),
-            });
-            github.rest.issues.addLabels({
-              owner,
-              repo,
-              issue_number: result.data.number,
-              labels: ['release', 'automated', '${{ github.event.inputs.version }}']
-            });
+          commit-message: update authors
+          title: "[CI/CD] Release v${{ github.event.inputs.version }}"
+          body: ./RELEASE.md
+          branch: release/v${{ github.event.inputs.version }}
   create_release_gh:
     name: Create Github Release
     needs: [create_release]
