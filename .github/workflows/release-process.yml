@@ -100,12 +100,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v3
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
           body: ${{ steps.render_template.outputs.result }}
-          branch: rama-random
-          token: ${{ github.token }}
-          base: master
+          branch: rama-random-12
+          base: ${{ env.GITHUB_REF }}
       # - name: Create Pull Request
       #   uses: actions/github-script@v6
       #   with:
