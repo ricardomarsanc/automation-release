@@ -101,6 +101,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
+          commit-message: "updated-version"
           body: ${{ steps.render_template.outputs.result }}
           branch: release/v${{ github.event.inputs.version }}
           base: origin/master
