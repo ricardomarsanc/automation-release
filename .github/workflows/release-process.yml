@@ -77,6 +77,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
+          fetch-depth: 0
           ref: develop
       - name: Node Setup
         uses: ./.github/actions/setup-node
@@ -84,7 +85,8 @@ jobs:
         run: |
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git config user.name "${{ github.actor }}"
-          git merge master
+          git fetch --all
+          git merge origin/master
           npm version ${{ github.event.inputs.version }} --allow-same-version
       - name: Render template
         id: render_template
