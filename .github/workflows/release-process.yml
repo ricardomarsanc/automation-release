@@ -111,6 +111,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
+          commit-message: "abcd"
           title: "[CI/CD] Release v${{ github.event.inputs.version }}"
           body: ./RELEASE.md
           base: master
