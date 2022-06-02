@@ -96,8 +96,6 @@ jobs:
       - name: Echo
         run: |
           echo "${{ steps.render_template.outputs.result }}"
-      - name: Checkout code
-        uses: actions/checkout@v3
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         env:
@@ -106,11 +104,6 @@ jobs:
           body: ${{ steps.render_template.outputs.result }}
           branch: release/v${{ github.event.inputs.version }}
           base: ${{ env.GITHUB_REF }}
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ github.token }}
-          branch: release/v${{ github.event.inputs.version }}
       # - name: Create Pull Request
       #   uses: actions/github-script@v6
       #   with:
