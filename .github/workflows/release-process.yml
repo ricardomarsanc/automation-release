@@ -90,7 +90,7 @@ jobs:
           npm version ${{ github.event.inputs.version }} --allow-same-version
           git add .
           git commit -m "ABC test"
-          # git push --force origin release/v${{ github.event.inputs.version }}
+          git push --force origin release/v${{ github.event.inputs.version }}
       # - name: Create Pull Request
       #   uses: actions/github-script@v6
       #   with:
