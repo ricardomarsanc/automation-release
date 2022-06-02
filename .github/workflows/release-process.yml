@@ -69,7 +69,7 @@ jobs:
   #         message: "Release process has started"
   #         channel: release-announcements
   #         title: "[Initiated] Release ${{ github.event.inputs.version }}"
-  create-release:
+  create_release:
     name: Create release branch
     # needs: [version_check]
     runs-on: ubuntu-20.04
@@ -114,6 +114,7 @@ jobs:
             });
   create_release_gh:
     name: Create Github Release
+    needs: [create_release]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
