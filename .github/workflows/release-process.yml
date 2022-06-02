@@ -88,6 +88,8 @@ jobs:
           git checkout -B release/v${{ github.event.inputs.version }} origin/develop
           git merge origin/master
           npm version ${{ github.event.inputs.version }} --allow-same-version
+          git add .
+          git commit -m "ABC test"
           # git push --force origin release/v${{ github.event.inputs.version }}
       # - name: Create Pull Request
       #   uses: actions/github-script@v6
@@ -110,11 +112,13 @@ jobs:
       #       });
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
           commit-message: "abcd"
           title: "[CI/CD] Release v${{ github.event.inputs.version }}"
           body: ./RELEASE.md
-          base: master
+          base: ${{ env.GITHUB_REF }}
           branch: release/v${{ github.event.inputs.version }}
   create_release_gh:
     name: Create Github Release
