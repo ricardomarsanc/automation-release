@@ -41,4 +41,3 @@ runs:
         SLACK_TITLE: ${{ inputs.title}}
         SLACK_USERNAME: ${{ inputs.username }}
         SLACK_COLOR: ${{ job.status }}
-        MSG_MINIMAL: "true"
