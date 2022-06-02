@@ -108,7 +108,7 @@ jobs:
               repo,
               head: 'release/v${{ github.event.inputs.version }}',
               base: 'master',
-              body: [${{ steps.render_template.outputs.result }}].join('\n'),
+              body: [ '${{ steps.render_template.outputs.result }}' ].join('\n'),
             });
             github.rest.issues.addLabels({
               owner,
