@@ -25,7 +25,7 @@ jobs:
         shell: bash
         run: |
           ver="$(node -p "require('./package.json').version")"
-          newver='${{ inputs.version }}'
+          newver='${{ github.event.inputs.version }}'
           invalidVersion=false
           IFS='.' read -ra VER_ARR <<< "$newver"
           if [ "${#VER_ARR[@]}" != 3 ]; then
