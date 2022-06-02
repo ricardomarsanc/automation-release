@@ -103,7 +103,7 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           body: ${{ steps.render_template.outputs.result }}
-          branch: release/v${{ github.event.inputs.version }}
+          branch: rama-random
           token: ${{ github.token }}
           base: master
       # - name: Create Pull Request
