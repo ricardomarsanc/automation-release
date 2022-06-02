@@ -52,6 +52,8 @@ jobs:
   create_release:
     name: Create release branch
     needs: [version_check]
+    outputs:
+      pr_url: ${{ steps.create_pr.outputs.result }}
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -94,23 +96,21 @@ jobs:
               issue_number: pullRequest.data.number,
               labels: ['release', 'automated', '${{ github.event.inputs.version }}']
             });
-            return pullRequest
-      - name: Echo PR
-        run: echo "${{steps.create_pr.outputs.result}}"
-  # send_slack_alert:
-  #   needs: [create_release]
-  #   name: Send Slack Notification for new release
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #     - name: Send Slack notification
-  #       uses: ./.github/actions/send-slack-notification
-  #       with:
-  #         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-  #         message: "New release branch created. See Pull Request [here]()"
-  #         channel: release-announcements
-  #         title: "[Initiated] Release ${{ github.event.inputs.version }}"
+            return pullRequest.data.url
+  send_slack_alert:
+    needs: [create_release]
+    name: Send Slack Notification for new release
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Send Slack notification
+        uses: ./.github/actions/send-slack-notification
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          message: "New release branch created. See Pull Request [here](${{ needs.create_release.outputs.pr_url }})"
+          channel: release-announcements
+          title: "Release ${{ github.event.inputs.version }}"
   # create_release_gh:
   #   name: Create Github Release
   #   needs: [create_release]
