@@ -97,25 +97,33 @@ jobs:
       - name: Echo
         run: |
           echo "${{ steps.render_template.outputs.result }}"
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: Create Pull Request
-        uses: actions/github-script@v6
+        uses: peter-evans/create-pull-request@v4
         with:
-          script: |
-            const { repo, owner } = context.repo;
-            const result = await github.rest.pulls.create({
-              title: '[CI/CD] Release v${{ github.event.inputs.version }}',
-              owner,
-              repo,
-              head: 'release/v${{ github.event.inputs.version }}',
-              base: 'master',
-              body: [ '${{ steps.render_template.outputs.result }}' ].join('\n'),
-            });
-            github.rest.issues.addLabels({
-              owner,
-              repo,
-              issue_number: result.data.number,
-              labels: ['release', 'automated', '${{ github.event.inputs.version }}']
-            });
+          body: ${{ steps.render_template.outputs.result }}
+          branch: release/v${{ github.event.inputs.version }}
+          token: ${{ github.token }}
+      # - name: Create Pull Request
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       const { repo, owner } = context.repo;
+      #       const result = await github.rest.pulls.create({
+      #         title: '[CI/CD] Release v${{ github.event.inputs.version }}',
+      #         owner,
+      #         repo,
+      #         head: 'release/v${{ github.event.inputs.version }}',
+      #         base: 'master',
+      #         body: [ 'Sample' ].join('\n'),
+      #       });
+      #       github.rest.issues.addLabels({
+      #         owner,
+      #         repo,
+      #         issue_number: result.data.number,
+      #         labels: ['release', 'automated', '${{ github.event.inputs.version }}']
+      #       });
   # create_release_gh:
   #   name: Create Github Release
   #   needs: [create_release]
