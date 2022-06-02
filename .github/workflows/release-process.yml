@@ -88,38 +88,26 @@ jobs:
           git checkout -B release/v${{ github.event.inputs.version }} origin/develop
           git merge origin/master
           npm version ${{ github.event.inputs.version }} --allow-same-version
-          git add .
-          git commit -m "ABC test"
           git push --force origin release/v${{ github.event.inputs.version }}
-      # - name: Create Pull Request
-      #   uses: actions/github-script@v6
-      #   with:
-      #     script: |
-      #       const { repo, owner } = context.repo;
-      #       const result = await github.rest.pulls.create({
-      #         title: '[CI/CD] Release v${{ github.event.inputs.version }}',
-      #         owner,
-      #         repo,
-      #         head: 'release/v${{ github.event.inputs.version }}',
-      #         base: 'master',
-      #         body: JSON.stringify({body: require('./RELEASE.md'}),
-      #       });
-      #       github.rest.issues.addLabels({
-      #         owner,
-      #         repo,
-      #         issue_number: result.data.number,
-      #         labels: ['release', 'automated', '${{ github.event.inputs.version }}']
-      #       });
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+        uses: actions/github-script@v6
         with:
-          commit-message: "abcd"
-          title: "[CI/CD] Release v${{ github.event.inputs.version }}"
-          body: ./RELEASE.md
-          base: ${{ env.GITHUB_REF }}
-          branch: release/v${{ github.event.inputs.version }}
+          script: |
+            const { repo, owner } = context.repo;
+            const result = await github.rest.pulls.create({
+              title: '[CI/CD] Release v${{ github.event.inputs.version }}',
+              owner,
+              repo,
+              head: 'release/v${{ github.event.inputs.version }}',
+              base: 'master',
+              body: ./RELEASE.md,
+            });
+            github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: result.data.number,
+              labels: ['release', 'automated', '${{ github.event.inputs.version }}']
+            });
   create_release_gh:
     name: Create Github Release
     needs: [create_release]
