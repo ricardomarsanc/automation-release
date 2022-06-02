@@ -8,6 +8,7 @@ on:
         description: "Enter the new version number"
 
 jobs:
+  # TODO: Check also Tags and releases (If branch has been deleted but release didn't)
   version_check:
     name: Version check
     runs-on: ubuntu-20.04
