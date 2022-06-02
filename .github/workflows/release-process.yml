@@ -96,7 +96,8 @@ jobs:
               issue_number: pullRequest.data.number,
               labels: ['release', 'automated', '${{ github.event.inputs.version }}']
             });
-            return pullRequest.data.url
+            return pullRequest.data.html_url
+          result-encoding: string
   send_slack_alert:
     needs: [create_release]
     name: Send Slack Notification for new release
