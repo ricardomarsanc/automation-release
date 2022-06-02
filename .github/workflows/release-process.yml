@@ -103,7 +103,7 @@ jobs:
         with:
           body: ${{ steps.render_template.outputs.result }}
           branch: release/v${{ github.event.inputs.version }}
-          base: ${{ env.GITHUB_REF }}
+          base: origin/master
       # - name: Create Pull Request
       #   uses: actions/github-script@v6
       #   with:
