@@ -105,7 +105,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           body: ${{ steps.render_template.outputs.result }}
-          branch: rama-random-12
+          branch: release/v${{ github.event.inputs.version }}
           base: ${{ env.GITHUB_REF }}
       # - name: Create Pull Request
       #   uses: actions/github-script@v6
