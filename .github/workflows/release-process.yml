@@ -56,19 +56,34 @@ jobs:
   #     - name: Exit Workflow
   #       if: ${{ steps.checkVersion.outputs.stop == 'true' }}
   #       run: exit 1
-  send_slack_alert:
-    name: Send Slack Notification for initiated release
+  # send_slack_alert:
+  #   name: Send Slack Notification for initiated release
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Send Slack notification
+  #       uses: ./.github/actions/send-slack-notification
+  #       with:
+  #         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+  #         message: "Release process has started"
+  #         channel: release-announcements
+  #         title: "[Initiated] Release ${{ github.event.inputs.version }}"
+  create_release_gh:
+    name: Create Github Release
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Send Slack notification
-        uses: ./.github/actions/send-slack-notification
+      - uses: actions/checkout@v2
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          message: "Release process has started"
-          channel: release-announcements
-          title: "[Initiated] Release ${{ github.event.inputs.version }}"
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body_path: ./CHANGELOG.md
+          draft: false
+          prerelease: false
   # create-release:
   #   name: Create release branch
   #   needs: [version_check]
