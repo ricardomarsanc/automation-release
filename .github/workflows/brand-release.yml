@@ -69,16 +69,16 @@ jobs:
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-          npm version $NEW_VERSION --allow-same-version --no-git-tag-version
+          npm version ${{ env.NEW_VERSION }} --allow-same-version --no-git-tag-version
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          title: "[CI/CD] Release v$NEW_VERSION"
+          title: "[CI/CD] Release v${{ env.NEW_VERSION }}"
           base: master
-          commit-message: Merge w/main & Update version to v$NEW_VERSION
-          branch: release/v$NEW_VERSION
-          body: v$NEW_VERSION
+          commit-message: Merge w/main & Update version to v${{ env.NEW_VERSION }}
+          branch: release/v${{ env.NEW_VERSION }}
+          body: v${{ env.NEW_VERSION }}
           labels: |
             'release'
             'automated'
-            'v$NEW_VERSION'
+            'v${{ env.NEW_VERSION }}'
