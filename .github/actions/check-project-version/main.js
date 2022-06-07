@@ -8,8 +8,9 @@ function getInput(name) {
 }
 
 (function main() {
-  const type = getInput("type");
+  const type = getInput("release-type");
+  const version = getInput("version");
   console.log("Type of release: ", type);
-  console.log("Version: ", getInput("version"));
-  console.log(semver.inc(getInput("version"), type));
+  console.log("Version: ", version);
+  console.log(semver.inc(version, type));
 })();
