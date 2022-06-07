@@ -47,7 +47,7 @@ jobs:
         id: set_new_version
         run: |
           new_ver="${{ steps.set_semver_version.outputs.new_version }}"
-          "::set-output name=new_version::$new_ver"
+          echo "::set-output name=new_version::$new_ver"
   # create_pr:
   #   name: Create Pull Request
   #   runs-on: ubuntu-20.04
