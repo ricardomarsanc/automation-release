@@ -44,7 +44,9 @@ jobs:
           release-type: ${{ github.event.inputs.release_type }}
           version: ${{ steps.get_version.outputs.version }}
       - name: Set new version output
-        run: "::set-output name=new_version::${{ steps.hello.outputs.time }}"
+        run: |
+          new_ver=${{ steps.hello.outputs.time }}
+          "::set-output name=new_version::$new_ver"
   # create_pr:
   #   name: Create Pull Request
   #   runs-on: ubuntu-20.04
