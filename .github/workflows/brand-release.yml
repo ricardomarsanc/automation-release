@@ -3,34 +3,68 @@ name: Create release branch (new)
 on:
   workflow_dispatch:
     inputs:
-      version:
+      release_type:
+        type: choice
         required: true
         description: "Enter the new version number"
+        options:
+          - "hotfix"
+          - "minor"
+          - "major"
 
 jobs:
-  create_pr:
-    name: Create Pull Request
+  check_version:
+    name: Set next project version
     runs-on: ubuntu-20.04
+    outputs:
+      version: ${{ steps.checkVersion.outputs.version }}
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: develop
-      - name: Update branch with master
+      - name: Node Setup
+        uses: ./.github/actions/setup-node
+      - name: Validate version
+        id: get_version
+        shell: bash
         run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git fetch --all
-          git merge origin/master --no-commit
-      - name: Make changes
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-          npm version ${{ github.event.inputs.version }} --allow-same-version --no-git-tag-version
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
+          ver="$(node -p "require('./package.json').version")"
+          echo "::set-output name=version::$ver"
+      - name: "Check version"
+        uses: ./.github/actions/check-project-version@main
         with:
-          base: master
-          commit-message: Update branch
-          branch: release/v${{ github.event.inputs.version }}
+          release-type: ${{ github.event.inputs.release_type }}
+          version: ${{ steps.get_version.outputs.version }}
+  # create_pr:
+  #   name: Create Pull Request
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #         ref: develop
+  #     - name: Update branch with master
+  #       run: |
+  #         git config user.name "${{ github.actor }}"
+  #         git config user.email "${{ github.actor }}@users.noreply.github.com"
+  #         git fetch --all
+  #         git merge origin/master --no-commit
+  #     - name: Make changes
+  #       run: |
+  #         git config user.name "${{ github.actor }}"
+  #         git config user.email "${{ github.actor }}@users.noreply.github.com"
+  #         npm version ${{ github.event.inputs.version }} --allow-same-version --no-git-tag-version
+  #     - name: Create Pull Request
+  #       uses: peter-evans/create-pull-request@v4
+  #       with:
+  #         title: "[CI/CD] Release v${{ github.event.inputs.version }}"
+  #         base: master
+  #         commit-message: Merge w/main & Update version to v${{ github.event.inputs.version }}
+  #         branch: release/v${{ github.event.inputs.version }}
+  #         body: v${{ github.event.inputs.version }}
+  #         labels: |
+  #           'release'
+  #           'automated'
+  #           'v${{ github.event.inputs.version }}'

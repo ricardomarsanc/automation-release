@@ -1,0 +1,18 @@
+name: Set next project version
+description: Set new version based on type of release
+
+inputs:
+  release-type:
+    required: false
+    description: "Type of release"
+    default: "minor"
+  version:
+    required: true
+    description: "Current version"
+outputs:
+  version:
+    description: "The time we greeted you"
+
+runs:
+  using: node12
+  main: main.js
