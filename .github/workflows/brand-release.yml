@@ -48,35 +48,37 @@ jobs:
         run: |
           new_ver="${{ steps.set_semver_version.outputs.new_version }}"
           echo "::set-output name=new_version::$new_ver"
-  # create_pr:
-  #   name: Create Pull Request
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         fetch-depth: 0
-  #         ref: develop
-  #     - name: Update branch with master
-  #       run: |
-  #         git config user.name "${{ github.actor }}"
-  #         git config user.email "${{ github.actor }}@users.noreply.github.com"
-  #         git fetch --all
-  #         git merge origin/master --no-commit
-  #     - name: Make changes
-  #       run: |
-  #         git config user.name "${{ github.actor }}"
-  #         git config user.email "${{ github.actor }}@users.noreply.github.com"
-  #         npm version ${{ github.event.inputs.version }} --allow-same-version --no-git-tag-version
-  #     - name: Create Pull Request
-  #       uses: peter-evans/create-pull-request@v4
-  #       with:
-  #         title: "[CI/CD] Release v${{ github.event.inputs.version }}"
-  #         base: master
-  #         commit-message: Merge w/main & Update version to v${{ github.event.inputs.version }}
-  #         branch: release/v${{ github.event.inputs.version }}
-  #         body: v${{ github.event.inputs.version }}
-  #         labels: |
-  #           'release'
-  #           'automated'
-  #           'v${{ github.event.inputs.version }}'
+  create_pr:
+    name: Create Pull Request
+    runs-on: ubuntu-20.04
+    env:
+      NEW_VERSION: ${{ steps.check_version.outputs.new_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: develop
+      - name: Update branch with master
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git fetch --all
+          git merge origin/master --no-commit
+      - name: Make changes
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          npm version $NEW_VERSION --allow-same-version --no-git-tag-version
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: "[CI/CD] Release v$NEW_VERSION"
+          base: master
+          commit-message: Merge w/main & Update version to v$NEW_VERSION
+          branch: release/v$NEW_VERSION
+          body: v$NEW_VERSION
+          labels: |
+            'release'
+            'automated'
+            'v$NEW_VERSION'
