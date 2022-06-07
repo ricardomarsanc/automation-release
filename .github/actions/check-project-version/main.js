@@ -1,8 +1,4 @@
-const fs = require("fs");
-const semverMajor = require("semver/functions/major");
-const semverMinor = require("semver/functions/minor");
-const semverPatch = require("semver/functions/patch");
-const semverInc = require("semver/functions/inc");
+const semver = require("semver");
 
 function getInput(name) {
   let val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
