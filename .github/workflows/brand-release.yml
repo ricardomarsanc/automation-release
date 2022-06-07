@@ -17,12 +17,17 @@ jobs:
         with:
           fetch-depth: 0
           ref: develop
-      - name: Make changes
+      - name: Update branch with master
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git fetch --all
           git merge origin/master --no-commit
+      - name: Make changes
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          npm version ${{ github.event.inputs.version }} --allow-same-version
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
