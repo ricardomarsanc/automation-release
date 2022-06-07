@@ -31,6 +31,7 @@ jobs:
         run: |
           ver="$(node -p "require('./package.json').version")"
           echo "::set-output name=version::$ver"
+      - run: npm ci
       - name: "Check version"
         uses: ./.github/actions/check-project-version
         with:
