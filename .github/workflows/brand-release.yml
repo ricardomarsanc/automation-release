@@ -22,7 +22,8 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git fetch --all
-          git merge -m "Update with master" origin/master
+          git merge origin/master
+          git commit -m "Update with master"
           npm version ${{ github.event.inputs.version }} --allow-same-version
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
