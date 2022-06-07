@@ -10,7 +10,7 @@ inputs:
     required: true
     description: "Current version"
 outputs:
-  version:
+  new_version:
     description: "The time we greeted you"
 
 runs:

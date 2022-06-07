@@ -6,7 +6,7 @@ on:
       release_type:
         type: choice
         required: true
-        description: "Enter the new version number"
+        description: "Release type"
         options:
           - "minor"
           - "hotfix"
@@ -14,10 +14,11 @@ on:
 
 jobs:
   check_version:
-    name: Set next project version
+    name: Set next project version based on type of release
     runs-on: ubuntu-20.04
     outputs:
-      version: ${{ steps.checkVersion.outputs.version }}
+      current_version: ${{ steps.get_version.outputs.current_version }}
+      new_version: ${{ steps.set_new_version.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,15 +31,20 @@ jobs:
         shell: bash
         run: |
           ver="$(node -p "require('./package.json').version")"
-          echo "::set-output name=version::$ver"
+          echo "::set-output name=current_version::$ver"
       - name: Install semver
         run: npm i semver
+      - name: Install actions/core
+        run: npm i @actions/core
       - run: npm ci
-      - name: "Check version"
+      - name: Set new project version
+        id: set_new_version
         uses: ./.github/actions/check-project-version
         with:
           release-type: ${{ github.event.inputs.release_type }}
           version: ${{ steps.get_version.outputs.version }}
+      - name: Set new version output
+        run: "::set-output name=new_version::${{ steps.hello.outputs.time }}"
   # create_pr:
   #   name: Create Pull Request
   #   runs-on: ubuntu-20.04
