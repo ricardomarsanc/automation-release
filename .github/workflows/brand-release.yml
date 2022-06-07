@@ -38,14 +38,15 @@ jobs:
         run: npm i @actions/core
       - run: npm ci
       - name: Set new project version
-        id: set_new_version
+        id: set_semver_version
         uses: ./.github/actions/check-project-version
         with:
           release-type: ${{ github.event.inputs.release_type }}
           version: ${{ steps.get_version.outputs.version }}
       - name: Set new version output
+        id: set_new_version
         run: |
-          new_ver=${{ steps.hello.outputs.time }}
+          new_ver="${{ steps.set_semver_version.outputs.new_version }}"
           "::set-output name=new_version::$new_ver"
   # create_pr:
   #   name: Create Pull Request
