@@ -9,6 +9,7 @@ on:
 
 jobs:
   # TODO: Check also Tags and releases (If branch has been deleted but release didn't)
+  # TODO: Choice (hotfix, feature)
   version_check:
     name: Version check
     runs-on: ubuntu-20.04
@@ -33,6 +34,7 @@ jobs:
             echo "Invalid version format (Format allowed: x.x.x)"
             invalidVersion=true
           fi
+          # Semver library to check
           if [ "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)" = "$ver" ]; then
             if [ "$(printf '%s\n' "$ver")" = "$newver" ]; then
               invalidVersion=true

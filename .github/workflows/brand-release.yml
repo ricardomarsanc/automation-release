@@ -1,0 +1,25 @@
+name: Create release branch (new)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        description: "Enter the new version number"
+
+jobs:
+  create_pr:
+    name: Create Pull Request
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Make changes
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          npm version ${{ github.event.inputs.version }} --allow-same-version
+          git commit -am "Upgrade version to v${{ github.event.inputs.version }}"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          branch: release/v${{ github.event.inputs.version }}
