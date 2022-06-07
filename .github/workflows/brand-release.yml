@@ -27,7 +27,7 @@ jobs:
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-          npm version ${{ github.event.inputs.version }} --allow-same-version
+          npm version ${{ github.event.inputs.version }} --allow-same-version --no-git-tag-version
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
