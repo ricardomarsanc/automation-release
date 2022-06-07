@@ -23,6 +23,8 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git fetch --all
           git merge origin/master
+          git add -A
+          git cherry-pick --continue
           npm version ${{ github.event.inputs.version }} --allow-same-version
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
