@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
       - name: Node Setup
         uses: ./.github/actions/setup-node
-      - name: Validate version
+      - name: Get current version
         id: get_version
         shell: bash
         run: |
@@ -34,7 +34,7 @@ jobs:
           echo "::set-output name=current_version::$ver"
       - name: Install semver
         run: npm i semver
-      - name: Install actions/core
+      - name: Install @actions/core
         run: npm i @actions/core
       - run: npm ci
       - name: Set new project version
