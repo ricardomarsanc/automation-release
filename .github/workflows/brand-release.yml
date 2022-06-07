@@ -42,7 +42,7 @@ jobs:
         uses: ./.github/actions/check-project-version
         with:
           release-type: ${{ github.event.inputs.release_type }}
-          version: ${{ steps.get_version.outputs.version }}
+          version: ${{ steps.get_version.outputs.current_version }}
       - name: Set new version output
         id: set_new_version
         run: |
