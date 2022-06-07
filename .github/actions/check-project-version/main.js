@@ -11,5 +11,5 @@ function getInput(name) {
   const type = getInput("type");
   console.log("Type of release: ", type);
   console.log("Version: ", getInput("version"));
-  console.log(semverInc(getInput("version"), type));
+  console.log(semver.inc(getInput("version"), type));
 })();
