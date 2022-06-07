@@ -8,8 +8,8 @@ on:
         required: true
         description: "Enter the new version number"
         options:
-          - "hotfix"
           - "minor"
+          - "hotfix"
           - "major"
 
 jobs:
@@ -31,6 +31,8 @@ jobs:
         run: |
           ver="$(node -p "require('./package.json').version")"
           echo "::set-output name=version::$ver"
+      - name: Install semver
+        run: npm i semver
       - run: npm ci
       - name: "Check version"
         uses: ./.github/actions/check-project-version
