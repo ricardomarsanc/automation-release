@@ -8,9 +8,12 @@ function getInput(name) {
 }
 
 (function main() {
-  const type = getInput("release-type");
+  const releaseType = getInput("release-type");
   const version = getInput("version");
-  console.log("Type of release: ", type);
+  console.log("Type of release: ", releaseType);
   console.log("Version: ", version);
-  console.log(semver.inc(version, type));
+  console.log("release variable type: ", typeof releaseType);
+  console.log("Version type: ", typeof version);
+  releaseType = releaseType == "hotfix" ? "patch" : releaseType;
+  console.log(semver.inc(version, releaseType));
 })();
