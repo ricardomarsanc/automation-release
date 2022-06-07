@@ -17,8 +17,8 @@ jobs:
     name: Set next project version based on type of release
     runs-on: ubuntu-20.04
     outputs:
-      current_version: ${{ steps.get_version.outputs.current_version }}
-      new_version: ${{ steps.set_new_version.outputs.version }}
+      currentVersion: ${{ steps.get_version.outputs.current_version }}
+      newVersion: ${{ steps.set_new_version.outputs.new_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -68,16 +68,16 @@ jobs:
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-          npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version --no-git-tag-version
+          npm version ${{ needs.check_version.outputs.newVersion }} --allow-same-version --no-git-tag-version
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          title: "[CI/CD] Release v${{ needs.check_version.outputs.new_version }}"
+          title: "[CI/CD] Release v${{ needs.check_version.outputs.newVersion }}"
           base: master
-          commit-message: Merge w/main & Update version to v${{ needs.check_version.outputs.new_version }}
+          commit-message: Merge w/main & Update version to v${{ needs.check_version.outputs.newVersion }}
           branch: release/v${{ needs.check_version.outputs.new_version }}
-          body: v${{ needs.check_version.outputs.new_version }}
+          body: v${{ needs.check_version.outputs.newVersion }}
           labels: |
             'release'
             'automated'
-            'v${{ needs.check_version.outputs.new_version }}'
+            'v${{ needs.check_version.outputs.newVersion }}'
