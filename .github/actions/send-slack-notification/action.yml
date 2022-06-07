@@ -1,0 +1,44 @@
+name: "Send Slack Notification"
+description: Send a slack notification for a specific channel
+
+inputs:
+  webhook:
+    description: "Webhook URL for specific channel"
+    required: true
+  title:
+    description: "Notification title"
+    required: false
+    default: "Github Actions Notification"
+  message:
+    description: "Message to send"
+    required: false
+    default: "N/A"
+  channel:
+    description: "Channel"
+    required: false
+    default: "general"
+  icon:
+    description: "Icon"
+    required: false
+    default: "https://github.com/syltek.png?size=48"
+  username:
+    description: "Name of the user"
+    required: false
+    default: "announcementsBot"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ inputs.webhook }}
+        SLACK_MESSAGE: ${{ inputs.message }}
+        SLACK_CHANNEL: ${{ inputs.channel }}
+        SLACK_ICON: ${{ inputs.icon }}
+        SLACK_TITLE: ${{ inputs.title}}
+        SLACK_USERNAME: ${{ inputs.username }}
+        SLACK_COLOR: ${{ job.status }}
+        MSG_MINIMAL: "true"
