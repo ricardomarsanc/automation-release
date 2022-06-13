@@ -69,8 +69,14 @@ jobs:
             translations
           reviewers: ${{ github.actor	}}
           delete-branch: true
-      - name: Push changes
-        if: ${{ inputs.change_type == 'commit' }}
+      - name: Push changes (standard)
+        if: ${{ inputs.change_type == 'commit' && !inputs.called_from_wf}}
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ github.token }}
+          branch: ${{ inputs.branch }}
+      - name: Push changes on wf call
+        if: ${{ inputs.change_type == 'commit' && inputs.called_from_wf}}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ github.token }}
