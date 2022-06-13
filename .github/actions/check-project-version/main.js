@@ -10,7 +10,6 @@ const core = require("@actions/core");
 (function main() {
   try {
     let releaseType = core.getInput("release-type");
-    console.log("Release Type: ", releaseType);
     releaseType = releaseType == "hotfix" ? "patch" : releaseType;
     const version = core.getInput("version");
     const newVersion = semver.inc(version, releaseType);

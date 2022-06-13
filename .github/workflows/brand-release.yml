@@ -47,6 +47,8 @@ jobs:
         id: set_new_version
         run: |
           new_ver="${{ steps.set_semver_version.outputs.new_version }}"
+          echo "### Success ✅" >> $GITHUB_STEP_SUMMARY
+          echo "The new version candidate for the release is $new_ver" >> $GITHUB_STEP_SUMMARY
           echo "::set-output name=new_version::$new_ver"
   create_pr:
     needs: [check_version]
