@@ -24,6 +24,9 @@ jobs:
           ref: ${{ inputs.branch }}
       - name: Use Node 14
         uses: ./.github/actions/setup-node
+      - name: Print event
+        run: |
+          echo "${{ github.event_name }}"
       - name: Commit changes
         shell: bash
         run: |
