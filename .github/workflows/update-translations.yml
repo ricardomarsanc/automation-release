@@ -6,7 +6,12 @@ on:
         description: Change type
         type: string
         default: "commit"
-        required: true
+        required: false
+      branch:
+        description: Branch name
+        type: string
+        default: "master"
+        required: false
 
 jobs:
   update-translations:

@@ -8,8 +8,6 @@ on:
         description: "Enter the new version number"
 
 jobs:
-  # TODO: Check also Tags and releases (If branch has been deleted but release didn't)
-  # TODO: Choice (hotfix, feature)
   version_check:
     name: Version check
     runs-on: ubuntu-20.04
@@ -131,10 +129,10 @@ jobs:
     #         body_path: ./RELEASE.md
     #         draft: false
     #         prerelease: false
-    # update_translations:
-    #   name: Update Translations ...
-    #   needs: [..., create-release]
-    #   uses: ./.github/workflows/update_translations.yml
-    #   with:
-    #     change_type: 'commit'
-    #     branch: 'release/v${{ needs.check_version.outputs.new_version }}'
+  # update_translations:
+  #   name: Update Translations
+  #   needs: [create_release]
+  #   uses: ./.github/workflows/update_translations.yml
+  #   with:
+  #     change_type: "commit"
+  #     branch: "release/v${{ needs.version_check.outputs.new_version }}"
