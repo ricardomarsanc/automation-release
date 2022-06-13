@@ -72,6 +72,7 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           npm version ${{ needs.check_version.outputs.newVersion }} --allow-same-version --no-git-tag-version
       - name: Create Pull Request
+        id: cpr
         uses: peter-evans/create-pull-request@v4
         with:
           title: "[CI/CD] Release v${{ needs.check_version.outputs.newVersion }}"
@@ -83,6 +84,12 @@ jobs:
             'release'
             'automated'
             'v${{ needs.check_version.outputs.newVersion }}'
+      - name: Finish PR creation
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          echo "### Success ✅" >> $GITHUB_STEP_SUMMARY
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
   update_translations:
     name: Update Translations
     needs: [check_version, create_pr]
