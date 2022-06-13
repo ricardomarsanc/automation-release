@@ -1,0 +1,53 @@
+name: Update translations
+on:
+  workflow_call:
+    inputs:
+      change_type:
+        description: Change type
+        type: string
+        default: "commit"
+        required: true
+
+jobs:
+  update-translations:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Use Node 14
+        uses: ./.github/actions/setup-node
+      - name: Commit changes
+        shell: bash
+        run: |
+          export BRANCH_SLUG="$(echo ${GITHUB_REF#refs/heads/} | tr / -)"
+          echo "BRANCH_SLUG=$BRANCH_SLUG" >> $GITHUB_ENV
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git config user.name "${{ github.actor }}"
+          echo "Added another line to README.md" >> ./RELEASE.md
+          git add ./RELEASE.md
+          git commit -m "chore(translations): update translations ($BRANCH_SLUG)"
+      - name: Create pull-requests
+        if: ${{ github.event.inputs.change_type == 'pull_request' }}
+        uses: peter-evans/create-pull-request@v3
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          base: ${{ env.GITHUB_REF }}
+          branch: ci/update-translations--${{ env.BRANCH_SLUG }}
+          # PR related options
+          title: 📘 Update translations (${{ env.BRANCH_SLUG }})
+          body: |
+            Updated translations for [playtomic-admin](https://app.phrase.com/accounts/syltek-solutions-s-l/projects/playtomic-admin/dashboard)
+            > Triggered by @${{ github.actor }}
+          labels: |
+            automated-pr
+            translations
+          reviewers: ${{ github.actor	}}
+          delete-branch: true
+
+      - name: Push changes
+        if: ${{ github.event.inputs.change_type == 'commit' }}
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ github.token }}
+          branch: ${{ github.ref }}
