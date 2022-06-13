@@ -84,14 +84,14 @@ jobs:
             'release'
             'automated'
             'v${{ needs.check_version.outputs.newVersion }}'
-      - name: Finish PR [Created]
+      - name: Finish PR (Created)
         if: ${{ steps.cpr.outputs.pull-request-number && steps.cpr.outputs.pull-request-operation == "created" }}
         run: |
           echo "### Success ✅" >> $GITHUB_STEP_SUMMARY
           echo "Pull Request created" >> $GITHUB_STEP_SUMMARY
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
           echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
-      - name: Finish PR [Updated]
+      - name: Finish PR (Updated)
         if: ${{ steps.cpr.outputs.pull-request-number && steps.cpr.outputs.pull-request-operation == "updated" }}
         run: |
           echo "### Success ✅" >> $GITHUB_STEP_SUMMARY
