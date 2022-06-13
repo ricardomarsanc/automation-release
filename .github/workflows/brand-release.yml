@@ -75,7 +75,7 @@ jobs:
           title: "[CI/CD] Release v${{ needs.check_version.outputs.newVersion }}"
           base: master
           commit-message: Merge w/main & Update version to v${{ needs.check_version.outputs.newVersion }}
-          branch: release/v${{ needs.check_version.outputs.new_version }}
+          branch: release/v${{ needs.check_version.outputs.newVersion }}
           body: v${{ needs.check_version.outputs.newVersion }}
           labels: |
             'release'
