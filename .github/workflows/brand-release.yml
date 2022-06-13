@@ -84,7 +84,7 @@ jobs:
   update_translations:
     name: Update Translations
     needs: [create_pr]
-    uses: ./.github/workflows/update_translations.yml
+    uses: ./.github/workflows/update-translations.yml
     with:
       change_type: "commit"
       branch: "release/v${{ needs.check_version.outputs.newVersion }}"
