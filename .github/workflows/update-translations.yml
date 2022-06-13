@@ -51,7 +51,6 @@ jobs:
             translations
           reviewers: ${{ github.actor	}}
           delete-branch: true
-
       - name: Push changes
         if: ${{ github.event.inputs.change_type == 'commit' }}
         uses: ad-m/github-push-action@master
