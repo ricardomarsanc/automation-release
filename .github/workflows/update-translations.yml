@@ -70,7 +70,7 @@ jobs:
           reviewers: ${{ github.actor	}}
           delete-branch: true
       - name: Push changes (standard)
-        if: ${{ inputs.change_type == 'commit' && inputs.called_from_wf == 'false' }}
+        if: ${{ inputs.change_type == 'commit' && !inputs.called_from_wf }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ github.token }}
