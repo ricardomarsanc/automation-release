@@ -84,6 +84,9 @@ jobs:
             'release'
             'automated'
             'v${{ needs.check_version.outputs.newVersion }}'
+      - name: Print event
+        run: |
+          echo "${{ github.event_name }}"
       - name: Finish PR (Created)
         if: ${{ steps.cpr.outputs.pull-request-number && steps.cpr.outputs.pull-request-operation == 'created' }}
         run: |

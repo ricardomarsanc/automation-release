@@ -24,9 +24,6 @@ jobs:
           ref: ${{ inputs.branch }}
       - name: Use Node 14
         uses: ./.github/actions/setup-node
-      - name: Print input
-        run: |
-          echo "${{ inputs.change_type }}"
       - name: Commit changes
         shell: bash
         run: |
