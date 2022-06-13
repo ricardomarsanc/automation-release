@@ -83,7 +83,7 @@ jobs:
             'v${{ needs.check_version.outputs.newVersion }}'
   update_translations:
     name: Update Translations
-    needs: [create_pr]
+    needs: [check_version, create_pr]
     runs-on: ubuntu-20.04
     steps:
       - name: Print branch
