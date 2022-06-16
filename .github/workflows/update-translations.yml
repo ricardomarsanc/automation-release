@@ -36,7 +36,7 @@ jobs:
         uses: ./.github/actions/setup-node
       - name: Print inputs
         run: |
-          echo "${{ inputs.change_type }}"
+          echo "Branch: ${{ inputs.branch }}"
       - name: Commit changes
         shell: bash
         run: |
@@ -68,10 +68,10 @@ jobs:
         run: |
           if [[ ${{ inputs.change_type == 'commit'  }} && ${{ inputs.branch  != '' }} ]]; then
               echo "Entra por el if"
-              echo "branch=${{ inputs.branch  }}" >> "$GITHUB_ENV"
+              echo "branch=${{ inputs.branch }}" >> "$GITHUB_ENV"
           else
               echo "Entra por el else"
-              echo "branch=${{ github.ref  }}" >> "$GITHUB_ENV"
+              echo "branch=${{ github.ref }}" >> "$GITHUB_ENV"
           fi
       - name: Push changes
         if: ${{ inputs.change_type == 'commit' }}
