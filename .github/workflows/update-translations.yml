@@ -79,7 +79,7 @@ jobs:
       - name: Set branch
         id: set_branch
         run: |
-          if [[ ${{ inputs.change_type  }} == 'commit' && (!${{ inputs.called_from_wf }} || ${{ inputs.called_from_wf }} == 'false')]]; then
+          if [[ ${{ inputs.change_type  }} == 'commit' && ${{ inputs.branch  != '' }} ]]; then
               echo "branch=${{ inputs.branch  }}" >> "$GITHUB_ENV"
           else
               echo "branch=${{ github.ref  }}" >> "$GITHUB_ENV"
