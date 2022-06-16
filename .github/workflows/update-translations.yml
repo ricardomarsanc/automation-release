@@ -76,15 +76,17 @@ jobs:
             translations
           reviewers: ${{ github.actor	}}
           delete-branch: true
-      - name: Push changes (standard)
-        if: ${{ inputs.change_type == 'commit' && (!inputs.called_from_wf || inputs.called_from_wf == 'false') }}
+      - name: Set branch
+        id: set_branch
+        run: |
+          if [[ ${{ inputs.change_type  }} == 'commit' && (!${{ inputs.called_from_wf }} || ${{ inputs.called_from_wf }} == 'false')]]; then
+              echo "branch=${{ inputs.branch  }}" >> "$GITHUB_ENV"
+          else
+              echo "branch=${{ github.ref  }}" >> "$GITHUB_ENV"
+          fi
+      - name: Push changes
+        if: ${{ inputs.change_type == 'commit' }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ github.token }}
-          branch: ${{ inputs.branch }}
-      - name: Push changes on wf call
-        if: ${{ inputs.change_type == 'commit' && inputs.called_from_wf}}
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ github.token }}
-          branch: ${{ inputs.branch }}
+          branch: ${{ env.branch }}
