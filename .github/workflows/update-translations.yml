@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Set destination branch
         run: |
-          if (( ${{ inputs.branch  != '' }} )); then
+          if (( ${{ inputs.change_type == 'commit' }} && ${{ inputs.branch  != '' }} )); then
               echo "IF"
               echo "branch=${{ inputs.branch }}" >> "$GITHUB_ENV"
           else
