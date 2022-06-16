@@ -27,16 +27,22 @@ jobs:
   update-translations:
     runs-on: ubuntu-20.04
     steps:
+      - name: Set destination branch
+        run: |
+          if (( ${{ inputs.branch  != '' }} )); then
+              echo "IF"
+              echo "branch=${{ inputs.branch }}" >> "$GITHUB_ENV"
+          else
+              echo "ELSE"
+              echo "branch=${{ github.ref }}" >> "$GITHUB_ENV"
+          fi
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: ${{ inputs.branch }}
+          ref: ${{ env.branch }}
       - name: Use Node 14
         uses: ./.github/actions/setup-node
-      - name: Print inputs
-        run: |
-          echo "Branch: ${{ inputs.branch }}"
       - name: Commit changes
         shell: bash
         run: |
@@ -63,16 +69,6 @@ jobs:
             translations
           reviewers: ${{ github.actor	}}
           delete-branch: true
-      - name: Set branch
-        id: set_branch
-        run: |
-          if (( ${{ inputs.change_type == 'commit' }} && ${{ inputs.branch  != '' }} )); then
-              echo "Entra por el if"
-              echo "branch=${{ inputs.branch }}" >> "$GITHUB_ENV"
-          else
-              echo "Entra por el else"
-              echo "branch=${{ github.ref }}" >> "$GITHUB_ENV"
-          fi
       - name: Push changes
         if: ${{ inputs.change_type == 'commit' }}
         uses: ad-m/github-push-action@master
