@@ -32,6 +32,10 @@ jobs:
   update-translations:
     runs-on: ubuntu-20.04
     steps:
+      - name: Print variables
+        run: |
+          echo "From inputs: ${{ inputs.change_type }}"
+          echo "From event ${{ github.event.inputs.change_type }}"
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -70,7 +74,7 @@ jobs:
           reviewers: ${{ github.actor	}}
           delete-branch: true
       - name: Push changes (standard)
-        if: ${{ inputs.change_type == 'commit' && !inputs.called_from_wf }}
+        if: ${{ inputs.change_type == 'commit' && (!inputs.called_from_wf || inputs.called_from_wf == 'false') }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ github.token }}

@@ -1,12 +1,6 @@
 const semver = require("semver");
 const core = require("@actions/core");
 
-// function getInput(name) {
-//   let val = process.env[`INPUT_${name.replace(/ /g, "_").toUpperCase()}`] || "";
-//   val = val.trim();
-//   return val;
-// }
-
 (function main() {
   try {
     let releaseType = core.getInput("release-type");
