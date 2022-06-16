@@ -22,20 +22,11 @@ on:
         type: string
         default: "master"
         required: false
-      called_from_wf:
-        description: Flag to know whether this is called from a workflow
-        type: boolean
-        default: true
-        required: false
 
 jobs:
   update-translations:
     runs-on: ubuntu-20.04
     steps:
-      - name: Print variables
-        run: |
-          echo "From inputs: ${{ inputs.change_type }}"
-          echo "From event ${{ github.event.inputs.change_type }}"
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -43,10 +34,6 @@ jobs:
           ref: ${{ inputs.branch }}
       - name: Use Node 14
         uses: ./.github/actions/setup-node
-      - name: Print event
-        if: ${{ inputs.called_from_wf }}
-        run: |
-          echo "${{ github.event_name }}"
       - name: Print inputs
         run: |
           echo "${{ inputs.change_type }}"
@@ -80,8 +67,10 @@ jobs:
         id: set_branch
         run: |
           if [[ ${{ inputs.change_type  }} == 'commit' && ${{ inputs.branch  != '' }} ]]; then
+              echo "Entra por el if"
               echo "branch=${{ inputs.branch  }}" >> "$GITHUB_ENV"
           else
+              echo "Entra por el else"
               echo "branch=${{ github.ref  }}" >> "$GITHUB_ENV"
           fi
       - name: Push changes
