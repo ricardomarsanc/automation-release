@@ -70,6 +70,7 @@ jobs:
         run: |
           echo "### Failure ❌" >> $GITHUB_STEP_SUMMARY
           echo "### There was an error during the merge process. This usually means that the destination branch is ahead and cannot be fast-forwarded. Please try again or run the process manually instead" >> $GITHUB_STEP_SUMMARY
+          exit 1
       - name: Upgrade version
         run: |
           npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
@@ -92,6 +93,7 @@ jobs:
         run: |
           echo "### Failure ❌" >> $GITHUB_STEP_SUMMARY
           echo "### There was an error during the Pull Request creation. Please try again or run the process manually instead" >> $GITHUB_STEP_SUMMARY
+          exit 1
       - name: Finish PR (Created)
         if: ${{ steps.create_pull_request.outputs.pull-request-number && steps.create_pull_request.outputs.pull-request-operation == 'created' }}
         run: |
