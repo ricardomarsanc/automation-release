@@ -64,10 +64,10 @@ jobs:
       - name: Update branch with master
         run: |
           git merge origin/master
-          git commit -am "Merge with master"
       - name: Upgrade version
         run: |
           npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
+          git commit -am "chore(release): upgrade version to ${{ needs.check_version.outputs.new_version }}"
       - name: Create Pull Request
         id: create_pull_request
         uses: peter-evans/create-pull-request@v4
