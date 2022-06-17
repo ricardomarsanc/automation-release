@@ -38,7 +38,7 @@ jobs:
       - name: Finish process
         run: |
           echo "### Success ✅" >> $GITHUB_STEP_SUMMARY
-          echo "The new version candidate for the release is ${{ steps.set_new_version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "Release type: ${{ inputs.release_type }}" >> $GITHUB_STEP_SUMMARY
           echo "Given the current version (${{ steps.set_new_version.outputs.current_version }}), the new version candidate for the release is ${{ steps.set_new_version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
   create_pr:
     needs: [check_version]
@@ -48,10 +48,8 @@ jobs:
       - name: Select branch based on release type
         run: |
           if ( ${{ inputs.release_type != 'hotfix' }} ); then
-              echo "IF"
               echo "branch=develop" >> "$GITHUB_ENV"
           else
-              echo "ELSE: ${{ github.ref }}"
               echo "branch=${{ github.ref }}" >> "$GITHUB_ENV"
           fi
       - name: Checkout
@@ -59,11 +57,12 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ env.branch }}
-      - name: Update branch with master
+      - name: Configure Git credentials
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git fetch --all
+      - name: Update branch with master
+        run: |
           git merge origin/master --no-commit
       - name: Make changes
         run: |
