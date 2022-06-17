@@ -61,12 +61,15 @@ jobs:
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
+      # - name: Update branch with master
+      #   run: |
+      #     git merge origin/master --no-commit
       - name: Update branch with master
         run: |
-          git merge origin/master --no-commit
+          git reset --hard origin/master
       - name: Upgrade version
         run: |
-          npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version --no-git-tag-version
+          npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
       - name: Create Pull Request
         id: create_pull_request
         uses: peter-evans/create-pull-request@v4
