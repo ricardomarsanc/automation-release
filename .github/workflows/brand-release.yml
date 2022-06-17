@@ -64,6 +64,7 @@ jobs:
       - name: Update branch with master
         run: |
           git merge origin/master
+          git commit -am "Merge with master"
       - name: Upgrade version
         run: |
           npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
