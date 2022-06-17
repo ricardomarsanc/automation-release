@@ -63,10 +63,10 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
       - name: Update branch with master
         run: |
-          git merge origin/master --no-commit
+          git merge origin/master
       - name: Upgrade version
         run: |
-          npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version --force
+          npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
           git commit -m "Upgraded version to ${{ needs.check_version.outputs.new_version }}"
       - name: Create Pull Request
         id: cpr
