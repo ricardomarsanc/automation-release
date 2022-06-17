@@ -64,9 +64,11 @@ jobs:
       - name: Update branch with master
         run: |
           git merge origin/master
+          git commit -m "Merged master into ${{ env.branch }}"
       - name: Upgrade version
         run: |
           npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
+          git commit -m "Upgraded version to ${{ needs.check_version.outputs.new_version }}"
       - name: Create Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v4
