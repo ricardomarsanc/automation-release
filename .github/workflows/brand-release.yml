@@ -66,15 +66,14 @@ jobs:
           git merge origin/master
       - name: Upgrade version
         run: |
-          npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
-          git commit -m "Upgraded version to ${{ needs.check_version.outputs.new_version }}"
+          npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version --no-git-tag-version
       - name: Create Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v4
         with:
           title: "Release v${{ needs.check_version.outputs.new_version }}"
           base: master
-          # commit-message: Merge w/main & Update version to v${{ needs.check_version.outputs.new_version }}
+          commit-message: Upgrade version to v${{ needs.check_version.outputs.new_version }}
           branch: release/v${{ needs.check_version.outputs.new_version }}
           body: v${{ needs.check_version.outputs.new_version }}
           labels: |
