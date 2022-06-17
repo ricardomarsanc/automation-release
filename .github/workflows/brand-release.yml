@@ -62,12 +62,17 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
       - name: Update branch with master
+        id: update_branch
         run: |
           git merge origin/master
       - name: Upgrade version
         run: |
           npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
-          git commit -am "chore(release): upgrade version to ${{ needs.check_version.outputs.new_version }}"
+      - name: Check merge failures
+        if: steps.update_branch.outcome != 'success'
+        run: |
+          echo "### Failure ❌" >> $GITHUB_STEP_SUMMARY
+          echo "### There was an error during the merge process. This usually means that the destination branch is ahead and cannot be fast-forwarded. Please try again or run the process manually instead" >> $GITHUB_STEP_SUMMARY
       - name: Create Pull Request
         id: create_pull_request
         uses: peter-evans/create-pull-request@v4
