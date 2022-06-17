@@ -1,0 +1,33 @@
+name: "Setup Translations Environment"
+description: Setup all variables for the Update Translations workflow based on the event type
+
+inputs:
+  change_type:
+    description: "The type of change that triggered the workflow"
+    required: true
+  branch:
+    description: "The branch to update (if needed)"
+    required: true
+
+  # outputs:
+  # change_type:
+  #   description: "The type of change that triggered the workflow"
+  # branch:
+  #   description: "The branch to update (if needed)"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ inputs.webhook }}
+        SLACK_MESSAGE: ${{ inputs.message }}
+        SLACK_CHANNEL: ${{ inputs.channel }}
+        SLACK_ICON: ${{ inputs.icon }}
+        SLACK_TITLE: ${{ inputs.title}}
+        SLACK_USERNAME: ${{ inputs.username }}
+        SLACK_COLOR: ${{ job.status }}
+        MSG_MINIMAL: "true"

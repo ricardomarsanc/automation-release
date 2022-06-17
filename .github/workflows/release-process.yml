@@ -3,32 +3,59 @@ name: Create release branch
 on:
   workflow_dispatch:
     inputs:
-      versionName:
+      version:
         required: true
         description: "Enter the new version number"
 
 jobs:
-  # current-version:
-  #   runs-on: ubuntu-20.04
-  #   outputs:
-  #     version: ${{ steps.vars.outputs.version }}
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
-  #       with:
-  #         fetch-depth: 0
-  #     - name: Node Setup
-  #       uses: ./.github/actions/setup-node
-  #     - name: Set version as output
-  #       id: vars
-  #       run: |
-  #         number=`grep version package.json`
-  #         echo "::set-output name=version::$number"
-
-  create-release:
-    # needs: [current-version]
+  version_check:
+    name: Version check
     runs-on: ubuntu-20.04
-    # if: github.event.inputs.versionName >= needs.current-version.outputs.version
+    outputs:
+      stop: ${{ steps.checkVersion.outputs.stop }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Node Setup
+        uses: ./.github/actions/setup-node
+      - name: Validate version
+        id: checkVersion
+        shell: bash
+        run: |
+          ver="$(node -p "require('./package.json').version")"
+          newver='${{ github.event.inputs.version }}'
+          invalidVersion=false
+          IFS='.' read -ra VER_ARR <<< "$newver"
+          if [ "${#VER_ARR[@]}" != 3 ]; then
+            echo "Invalid version format (Format allowed: x.x.x)"
+            invalidVersion=true
+          fi
+          # Semver library to check
+          if [ "$(printf '%s\n' "$ver" "$newver" | sort -V | head -n1)" = "$ver" ]; then
+            if [ "$(printf '%s\n' "$ver")" = "$newver" ]; then
+              invalidVersion=true
+            fi
+          else
+            invalidVersion=true
+          fi
+          echo "::set-output name=stop::$invalidVersion"
+      - name: Show Status Message
+        if: ${{ steps.checkVersion.outputs.stop == 'true' }}
+        run: |
+          echo "### Failed ❌" >> $GITHUB_STEP_SUMMARY
+          echo "The new version does not follow the conventions or is not higher than the current one, please review workflow" >> $GITHUB_STEP_SUMMARY
+          echo "Allowed formats: (x.x.x)" >> $GITHUB_STEP_SUMMARY
+      - name: Exit Workflow
+        if: ${{ steps.checkVersion.outputs.stop == 'true' }}
+        run: exit 1
+  create_release:
+    name: Create release branch
+    needs: [version_check]
+    outputs:
+      pr_url: ${{ steps.create_pr.outputs.result }}
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -41,15 +68,71 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git config user.name "${{ github.actor }}"
           git fetch --all
-          git checkout -B release/v${{ github.event.inputs.versionName }} origin/develop
+          git checkout -B release/v${{ github.event.inputs.version }} origin/develop
           git merge origin/master
-          npm version ${{ github.event.inputs.versionName }} --allow-same-version
-          git push --force origin release/v${{ github.event.inputs.versionName }}
-      # - name: Create Pull Request
-      #   uses: peter-evans/create-pull-request@v4
-      #   with:
-      #     branch: "release/v${{ github.event.inputs.versionName }}"
-      #     base: main
-      #     commit-message: release branch created
-      #     title: v${{ github.event.inputs.versionName }} into main
-      #     body: Release branch created by workflow
+          npm version ${{ github.event.inputs.version }} --allow-same-version
+          git push --force origin release/v${{ github.event.inputs.version }}
+      - name: Render template
+        id: render_template
+        uses: chuhlomin/render-template@v1.5
+        with:
+          template: ./RELEASE.md
+      - name: Create Pull Request
+        id: create_pr
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { repo, owner } = context.repo;
+            const pullRequest = await github.rest.pulls.create({
+              title: '[CI/CD] Release v${{ github.event.inputs.version }}',
+              owner,
+              repo,
+              head: 'release/v${{ github.event.inputs.version }}',
+              base: 'master',
+              body: `${{ steps.render_template.outputs.result }}`
+            });
+            github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: pullRequest.data.number,
+              labels: ['release', 'automated', '${{ github.event.inputs.version }}']
+            });
+            return pullRequest.data.html_url
+          result-encoding: string
+    # send_slack_alert:
+    #   needs: [create_release]
+    #   name: Send Slack Notification
+    #   runs-on: ubuntu-20.04
+    #   steps:
+    #     - name: Checkout
+    #       uses: actions/checkout@v3
+    #     - name: Send Slack notification
+    #       uses: ./.github/actions/send-slack-notification
+    #       with:
+    #         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+    #         message: New release branch created. See Pull Request <${{ needs.create_release.outputs.pr_url }}|here>
+    #         channel: release-announcements
+    #         title: Release v${{ needs.check_version.outputs.new_version }}
+    # create_gh_release:
+    #   name: Create Github Release
+    #   needs: [create_release]
+    #   runs-on: ubuntu-20.04
+    #   steps:
+    #     - uses: actions/checkout@v3
+    #     - name: Create Release
+    #       uses: actions/create-release@v1
+    #       env:
+    #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #       with:
+    #         tag_name: v${{ needs.check_version.outputs.new_version }}
+    #         release_name: v${{ needs.check_version.outputs.new_version }}
+    #         body_path: ./RELEASE.md
+    #         draft: false
+    #         prerelease: false
+  # update_translations:
+  #   name: Update Translations
+  #   needs: [create_release]
+  #   uses: ./.github/workflows/update_translations.yml
+  #   with:
+  #     change_type: "commit"
+  #     branch: "release/v${{ needs.version_check.outputs.new_version }}"
