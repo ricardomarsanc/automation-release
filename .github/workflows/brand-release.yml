@@ -63,10 +63,10 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
       - name: Update branch with master
         run: |
-          git merge origin/master --no-commit
-      - name: Make changes
+          git merge origin/master
+      - name: Upgrade version
         run: |
-          npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version --no-git-tag-version
+          npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
       - name: Create Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v4
@@ -80,6 +80,7 @@ jobs:
             'release'
             'automated'
             'v${{ needs.check_version.outputs.new_version }}'
+            'v${{ inputs.release_type }}'
       - name: Finish PR (Created)
         if: ${{ steps.cpr.outputs.pull-request-number && steps.cpr.outputs.pull-request-operation == 'created' }}
         run: |
