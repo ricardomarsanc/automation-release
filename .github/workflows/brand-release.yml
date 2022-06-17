@@ -65,7 +65,6 @@ jobs:
         id: update_branch
         run: |
           git merge origin/master
-        continue-on-error: true
       - name: Check merge failures
         if: ${{ steps.update_branch.outcome != 'success' }}
         run: |
@@ -87,7 +86,6 @@ jobs:
             'automated'
             'v${{ needs.check_version.outputs.new_version }}'
             '${{ inputs.release_type }}'
-        continue-on-error: true
       - name: Check merge failures
         if: ${{ steps.update_branch.outcome != 'success' }}
         run: |
