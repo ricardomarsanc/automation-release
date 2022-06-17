@@ -31,7 +31,11 @@ jobs:
         shell: bash
         run: |
           ver="$(node -p "require('./package.json').version")"
+          release_type="${{ inputs.release_type }}"
+          echo "Release type: $release_type"
           echo "::set-output name=current_version::$ver"
+          newVer="$(npx semver -i $release_type $ver)"
+          echo "New Version: $newVer"
       - name: Install semver
         run: npm i semver
       - name: Install @actions/core
@@ -68,14 +72,12 @@ jobs:
           git merge origin/master --no-commit
       - name: Make changes
         run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
           npm version ${{ needs.check_version.outputs.newVersion }} --allow-same-version --no-git-tag-version
       - name: Create Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v4
         with:
-          title: "[CI/CD] Release v${{ needs.check_version.outputs.newVersion }}"
+          title: "Release v${{ needs.check_version.outputs.newVersion }}"
           base: master
           commit-message: Merge w/main & Update version to v${{ needs.check_version.outputs.newVersion }}
           branch: release/v${{ needs.check_version.outputs.newVersion }}
