@@ -55,7 +55,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
           ref: ${{ env.branch }}
       - name: Configure Git credentials
         run: |
@@ -66,6 +65,7 @@ jobs:
       #     git merge origin/master --no-commit
       - name: Update branch with master
         run: |
+          git fetch origin master:master
           git reset --hard origin/master
           git add .
       - name: Upgrade version
