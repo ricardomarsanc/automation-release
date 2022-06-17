@@ -63,8 +63,7 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
       - name: Update branch with master
         run: |
-          git merge origin/master
-          git commit -m "Merged master into ${{ env.branch }}"
+          git merge origin/master --no-commit
       - name: Upgrade version
         run: |
           npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
@@ -75,7 +74,7 @@ jobs:
         with:
           title: "Release v${{ needs.check_version.outputs.new_version }}"
           base: master
-          commit-message: Merge w/main & Update version to v${{ needs.check_version.outputs.new_version }}
+          # commit-message: Merge w/main & Update version to v${{ needs.check_version.outputs.new_version }}
           branch: release/v${{ needs.check_version.outputs.new_version }}
           body: v${{ needs.check_version.outputs.new_version }}
           labels: |
