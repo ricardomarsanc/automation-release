@@ -68,7 +68,6 @@ jobs:
         run: |
           git reset --hard origin/master
           git add .
-          git cherry-pick --continue
       - name: Upgrade version
         run: |
           npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
