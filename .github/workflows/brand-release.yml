@@ -86,8 +86,9 @@ jobs:
             'automated'
             'v${{ needs.check_version.outputs.new_version }}'
             '${{ inputs.release_type }}'
+        continue-on-error: true
       - name: Check merge failures
-        if: ${{ steps.update_branch.outcome != 'success' }}
+        if: ${{ steps.create_pull_request.outcome != 'success' }}
         run: |
           echo "### Failure ❌" >> $GITHUB_STEP_SUMMARY
           echo "### There was an error during the Pull Request creation. Please try again or run the process manually instead" >> $GITHUB_STEP_SUMMARY
