@@ -1,7 +1,6 @@
 name: Deployment Pipeline
 
 on:
-  push:
   pull_request:
     types:
       - opened
