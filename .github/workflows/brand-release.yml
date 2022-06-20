@@ -85,7 +85,7 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           title: "Release v${{ needs.check_version.outputs.new_version }}"
-          base: ${{ github.ref }}
+          base: ${{ env.GITHUB_REF }}
           branch: release/v${{ needs.check_version.outputs.new_version }}
           body: v${{ needs.check_version.outputs.new_version }}
           labels: |
