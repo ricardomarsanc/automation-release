@@ -65,12 +65,13 @@ jobs:
         run: |
           git checkout -B release/v${{ needs.check_version.outputs.new_version }}
           git merge origin/master
+          git push
       - name: Create Pull Request
         id: create_pull_request
         uses: peter-evans/create-pull-request@v4
         with:
           title: "Release v${{ needs.check_version.outputs.new_version }}"
-          # branch: release/v${{ needs.check_version.outputs.new_version }}
+          branch: release/v${{ needs.check_version.outputs.new_version }}
           body: v${{ needs.check_version.outputs.new_version }}
           labels: |
             release
