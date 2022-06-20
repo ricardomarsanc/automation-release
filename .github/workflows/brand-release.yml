@@ -45,18 +45,17 @@ jobs:
     name: Create Pull Request
     runs-on: ubuntu-20.04
     steps:
-      - name: Select branch based on release type
-        run: |
-          if ( ${{ inputs.release_type != 'hotfix' }} ); then
-              echo "branch=develop" >> "$GITHUB_ENV"
-          else
-              echo "branch=${{ github.ref }}" >> "$GITHUB_ENV"
-          fi
+      # - name: Select branch based on release type
+      #   run: |
+      #     if ( ${{ inputs.release_type != 'hotfix' }} ); then
+      #         echo "branch=develop" >> "$GITHUB_ENV"
+      #     else
+      #         echo "branch=${{ github.ref }}" >> "$GITHUB_ENV"
+      #     fi
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: ${{ env.branch }}
       - name: Configure Git credentials
         run: |
           git config user.name "${{ github.actor }}"
@@ -64,7 +63,12 @@ jobs:
       - name: Update branch with master
         id: update_branch
         run: |
+          git fetch --all
+          git checkout develop
           git merge origin/master
+          git checkout master
+          git reset --hard develop
+        continue-on-error: true
       - name: Check merge failures
         if: ${{ steps.update_branch.outcome != 'success' }}
         run: |
@@ -83,10 +87,10 @@ jobs:
           branch: release/v${{ needs.check_version.outputs.new_version }}
           body: v${{ needs.check_version.outputs.new_version }}
           labels: |
-            'release'
-            'automated'
-            'v${{ needs.check_version.outputs.new_version }}'
-            '${{ inputs.release_type }}'
+            release
+            automated
+            v${{ needs.check_version.outputs.new_version }}
+            ${{ inputs.release_type }}
         continue-on-error: true
       - name: Check merge failures
         if: ${{ steps.create_pull_request.outcome != 'success' }}
