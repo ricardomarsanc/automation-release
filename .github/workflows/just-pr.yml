@@ -1,4 +1,4 @@
-name: Create release branch (new)
+name: Just PR
 
 on:
   workflow_dispatch:
@@ -54,48 +54,19 @@ jobs:
           fi
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: ${{ env.branch }}
-      - name: Configure Git credentials
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-      - name: Update branch with master
-        id: update_branch
-        run: |
-          git pull origin develop
-          git merge origin/master
-        continue-on-error: true
-      - name: Check merge failures
-        if: ${{ steps.update_branch.outcome != 'success' }}
-        run: |
-          echo "### Failure ❌" >> $GITHUB_STEP_SUMMARY
-          echo "### There was an error during the merge process. This usually means that the destination branch is ahead and cannot be fast-forwarded. Please try again or run the process manually instead" >> $GITHUB_STEP_SUMMARY
-          exit 1
-      - name: Upgrade version
-        run: |
-          npm version ${{ needs.check_version.outputs.new_version }} --allow-same-version
       - name: Create Pull Request
         id: create_pull_request
         uses: peter-evans/create-pull-request@v4
         with:
           title: "Release v${{ needs.check_version.outputs.new_version }}"
           base: master
-          branch: release/v${{ needs.check_version.outputs.new_version }}
+          branch: develop
           body: v${{ needs.check_version.outputs.new_version }}
           labels: |
             release
             automated
             v${{ needs.check_version.outputs.new_version }}
             ${{ inputs.release_type }}
-        continue-on-error: true
-      - name: Check merge failures
-        if: ${{ steps.create_pull_request.outcome != 'success' }}
-        run: |
-          echo "### Failure ❌" >> $GITHUB_STEP_SUMMARY
-          echo "### There was an error during the Pull Request creation. Please try again or run the process manually instead" >> $GITHUB_STEP_SUMMARY
-          exit 1
       - name: Finish PR (Created)
         if: ${{ steps.create_pull_request.outputs.pull-request-number && steps.create_pull_request.outputs.pull-request-operation == 'created' }}
         run: |
