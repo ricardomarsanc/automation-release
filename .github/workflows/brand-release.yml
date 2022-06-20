@@ -60,10 +60,10 @@ jobs:
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-      - name: Update branch with master
+      - name: Update branch with master (minor/major)
+        if: ${{ inputs.release_type != 'hotfix' }}
         id: update_branch
         run: |
-          git fetch --all
           git checkout develop
           git merge origin/master
           git checkout master
@@ -83,7 +83,7 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           title: "Release v${{ needs.check_version.outputs.new_version }}"
-          base: master
+          base: ${{ github.ref }}
           branch: release/v${{ needs.check_version.outputs.new_version }}
           body: v${{ needs.check_version.outputs.new_version }}
           labels: |
@@ -103,14 +103,12 @@ jobs:
         run: |
           echo "### Success ✅" >> $GITHUB_STEP_SUMMARY
           echo "Pull Request created" >> $GITHUB_STEP_SUMMARY
-          echo "Pull Request Number - ${{ steps.create_pull_request.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
           echo "Pull Request URL - ${{ steps.create_pull_request.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
       - name: Finish PR (Updated)
         if: ${{ steps.create_pull_request.outputs.pull-request-number && steps.create_pull_request.outputs.pull-request-operation == 'updated' }}
         run: |
           echo "### Success ✅" >> $GITHUB_STEP_SUMMARY
           echo "The Pull Request already exists and has been updated" >> $GITHUB_STEP_SUMMARY
-          echo "Pull Request Number - ${{ steps.create_pull_request.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
           echo "Pull Request URL - ${{ steps.create_pull_request.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
   update_translations:
     name: Update Translations
