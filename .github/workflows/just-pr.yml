@@ -71,8 +71,6 @@ jobs:
       - name: Create Pull Request
         id: create_pull_request
         uses: peter-evans/create-pull-request@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_PAT }}
         with:
           token: ${{ secrets.MY_PAT }}
           title: "Release v${{ needs.check_version.outputs.new_version }}"
