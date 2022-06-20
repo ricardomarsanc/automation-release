@@ -74,6 +74,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.MY_PAT }}
         with:
+          token: ${{ secrets.MY_PAT }}
           title: "Release v${{ needs.check_version.outputs.new_version }}"
           base: master
           branch: release/v${{ needs.check_version.outputs.new_version }}
