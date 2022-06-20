@@ -14,7 +14,7 @@ on:
 
 jobs:
   check_version:
-    name: Set next project version based on type of release
+    name: Create new version
     runs-on: ubuntu-20.04
     outputs:
       current_version: ${{ steps.set_new_version.outputs.current_version }}
