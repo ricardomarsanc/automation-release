@@ -44,14 +44,10 @@ jobs:
     needs: [check_version]
     name: Create Pull Request
     runs-on: ubuntu-20.04
+    outputs:
+      pull_request_url: ${{ steps.create_pull_request.outputs.pull-request-url }}
+      pull_request_operation: ${{ steps.create_pull_request.outputs.pull-request-operation }}
     steps:
-      # - name: Select branch based on release type
-      #   run: |
-      #     if ( ${{ inputs.release_type != 'hotfix' }} ); then
-      #         echo "branch=develop" >> "$GITHUB_ENV"
-      #     else
-      #         echo "branch=${{ github.ref }}" >> "$GITHUB_ENV"
-      #     fi
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -84,6 +80,7 @@ jobs:
         id: create_pull_request
         uses: peter-evans/create-pull-request@v4
         with:
+          token: ${{ secrets.MY_PAT }}
           title: "Release v${{ needs.check_version.outputs.new_version }}"
           base: ${{ env.GITHUB_REF }}
           branch: release/v${{ needs.check_version.outputs.new_version }}
@@ -100,18 +97,6 @@ jobs:
           echo "### Failure ❌" >> $GITHUB_STEP_SUMMARY
           echo "### There was an error during the Pull Request creation. Please try again or run the process manually instead" >> $GITHUB_STEP_SUMMARY
           exit 1
-      - name: Finish PR (Created)
-        if: ${{ steps.create_pull_request.outputs.pull-request-number && steps.create_pull_request.outputs.pull-request-operation == 'created' }}
-        run: |
-          echo "### Success ✅" >> $GITHUB_STEP_SUMMARY
-          echo "Pull Request created" >> $GITHUB_STEP_SUMMARY
-          echo "Pull Request URL - ${{ steps.create_pull_request.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
-      - name: Finish PR (Updated)
-        if: ${{ steps.create_pull_request.outputs.pull-request-number && steps.create_pull_request.outputs.pull-request-operation == 'updated' }}
-        run: |
-          echo "### Success ✅" >> $GITHUB_STEP_SUMMARY
-          echo "The Pull Request already exists and has been updated" >> $GITHUB_STEP_SUMMARY
-          echo "Pull Request URL - ${{ steps.create_pull_request.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
   update_translations:
     name: Update Translations
     needs: [check_version, create_pr]
@@ -119,3 +104,20 @@ jobs:
     with:
       change_type: "commit"
       branch: "release/v${{ needs.check_version.outputs.new_version }}"
+  finish_process:
+    name: Finish process
+    needs: [check_version, create_pr, update_translations]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Finish Pull Request (Created)
+        if: ${{ needs.create_pr.outputs.pull_request_url && needs.create_pr.outputs.pull_request_operation == 'created' }}
+        run: |
+          echo "### Success ✅" >> $GITHUB_STEP_SUMMARY
+          echo "The Pull Request has been created and the translations have been updated" >> $GITHUB_STEP_SUMMARY
+          echo "Pull Request - ${{ needs.create_pr.outputs.pull_request_url }}" >> $GITHUB_STEP_SUMMARY
+      - name: Finish Pull Request (Updated)
+        if: ${{ needs.create_pr.outputs.pull_request_url && needs.create_pr.outputs.pull_request_operation == 'updated' }}
+        run: |
+          echo "### Success ✅" >> $GITHUB_STEP_SUMMARY
+          echo "The Pull Request already exists and has been updated as well as the translations" >> $GITHUB_STEP_SUMMARY
+          echo "Pull Request - ${{ needs.create_pr.outputs.pull_request_url }}" >> $GITHUB_STEP_SUMMARY
