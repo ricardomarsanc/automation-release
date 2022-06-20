@@ -2,9 +2,6 @@ name: Deployment Pipeline
 
 on:
   pull_request:
-    types:
-      - opened
-      - synchronize
 
 jobs:
   cancel_ongoing_flows:
