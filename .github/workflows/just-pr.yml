@@ -62,7 +62,7 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
       - name: Reset promotion branch
         run: |
-          git fetch origin develop:develop
+          git fetch origin develop
           git merge origin/master
           git reset --hard develop
       - name: Create Pull Request
