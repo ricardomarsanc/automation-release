@@ -69,6 +69,8 @@ jobs:
           git checkout master
           git reset --hard develop
         continue-on-error: true
+      - run: |
+          echo "${{ steps.update_branch.outcome }}"
       - name: Check merge failures
         if: ${{ (steps.update_branch.outcome != 'success') || ( steps.update_branch.outcome != 'skipped' ) }}
         run: |
