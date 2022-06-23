@@ -85,6 +85,7 @@ jobs:
           base: ${{ env.GITHUB_REF }}
           branch: release/v${{ needs.check_version.outputs.new_version }}
           body: v${{ needs.check_version.outputs.new_version }}
+          assignees: ${{ github.actor }}
           labels: |
             release
             automated
