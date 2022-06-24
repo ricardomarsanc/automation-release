@@ -47,6 +47,7 @@ jobs:
     outputs:
       pull_request_url: ${{ steps.create_pull_request.outputs.pull-request-url }}
       pull_request_operation: ${{ steps.create_pull_request.outputs.pull-request-operation }}
+      translation_token: ${{ secrets.MY_PAT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -104,7 +105,7 @@ jobs:
     needs: [check_version, create_pr]
     uses: ./.github/workflows/update-translations.yml
     with:
-      release_token: "${{ secrets.MY_PAT }}"
+      release_token: "${{ needs.create_pr.outputs.translation_token }}"
       change_type: "commit"
       branch: "release/v${{ needs.check_version.outputs.new_version }}"
   finish_process:
