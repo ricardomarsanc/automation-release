@@ -22,9 +22,8 @@ on:
         type: string
         default: "master"
         required: false
-      release_token:
-        description: Release token
-        type: string
+    secrets:
+      envPAT:
         required: true
 
 jobs:
@@ -36,7 +35,7 @@ jobs:
           # Set destination branch depending on whether the Workflow has been called manually or from the release workflow
           if ( ${{ inputs.change_type == 'commit' }} && ${{ inputs.branch  != '' }} ); then
               echo "IF"
-              echo "token=${{ inputs.release_token }}" >> "$GITHUB_ENV"
+              echo "token=${{ secrets.envPAT }}" >> "$GITHUB_ENV"
               echo "branch=${{ inputs.branch }}" >> "$GITHUB_ENV"
           else
               echo "ELSE"

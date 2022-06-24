@@ -105,9 +105,10 @@ jobs:
     needs: [check_version, create_pr]
     uses: ./.github/workflows/update-translations.yml
     with:
-      release_token: "${{ needs.create_pr.outputs.translation_token }}"
       change_type: "commit"
       branch: "release/v${{ needs.check_version.outputs.new_version }}"
+    secrets:
+      envPAT: ${{ secrets.MY_PAT }}
   finish_process:
     name: Finish process
     needs: [check_version, create_pr, update_translations]
