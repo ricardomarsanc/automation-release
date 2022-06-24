@@ -37,12 +37,17 @@ jobs:
               echo "ELSE"
               echo "branch=${{ github.ref }}" >> "$GITHUB_ENV"
           fi
+      - name: Print pat
+        id: set_token_pat
+        run: |
+          echo "${{ secrets.MY_PAT }}"
+          echo "::set-env name=MY_PAT::${{ secrets.MY_PAT }}"
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ steps.set_token_pat.outputs.MY_PAT }}
           ref: ${{ env.branch }}
-          token: ${{ secrets.MY_PAT }}
       - name: Use Node 14
         uses: ./.github/actions/setup-node
       - name: Commit changes
