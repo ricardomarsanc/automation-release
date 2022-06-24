@@ -22,6 +22,10 @@ on:
         type: string
         default: "master"
         required: false
+      release_token:
+        description: Release token
+        type: string
+        required: true
 
 jobs:
   update-translations:
@@ -32,21 +36,21 @@ jobs:
           # Set destination branch depending on whether the Workflow has been called manually or from the release workflow
           if ( ${{ inputs.change_type == 'commit' }} && ${{ inputs.branch  != '' }} ); then
               echo "IF"
+              echo "token=${{ inputs.release_token }}" >> "$GITHUB_ENV"
               echo "branch=${{ inputs.branch }}" >> "$GITHUB_ENV"
           else
               echo "ELSE"
+              echo "token=${{ github.token }}" >> "$GITHUB_ENV"
               echo "branch=${{ github.ref }}" >> "$GITHUB_ENV"
           fi
       - name: Print pat
-        id: set_token_pat
         run: |
-          echo "${{ secrets.MY_PAT }}"
-          echo "::set-env name=MY_PAT::${{ secrets.MY_PAT }}"
+          echo "${{ env.token }}"
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          token: ${{ steps.set_token_pat.outputs.MY_PAT }}
+          token: ${{ env.token }}
           ref: ${{ env.branch }}
       - name: Use Node 14
         uses: ./.github/actions/setup-node
@@ -62,7 +66,7 @@ jobs:
         if: ${{ inputs.change_type == 'pull_request' }}
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.MY_PAT }}
+          token: ${{ env.token }}
           base: ${{ env.GITHUB_REF }}
           branch: ci/update-translations
           title: 📘 Update translations
@@ -78,5 +82,5 @@ jobs:
         if: ${{ inputs.change_type == 'commit' }}
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.MY_PAT }}
+          github_token: ${{ env.token }}
           branch: ${{ env.branch }}
