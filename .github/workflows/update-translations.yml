@@ -39,7 +39,7 @@ jobs:
               echo "branch=${{ inputs.branch }}" >> "$GITHUB_ENV"
           else
               echo "ELSE"
-              echo "token=${{ github.token }}" >> "$GITHUB_ENV"
+              echo "token=${{ secrets.MY_PAT }}" >> "$GITHUB_ENV"
               echo "branch=${{ github.ref }}" >> "$GITHUB_ENV"
           fi
       - name: Print pat
