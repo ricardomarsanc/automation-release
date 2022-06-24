@@ -47,7 +47,6 @@ jobs:
     outputs:
       pull_request_url: ${{ steps.create_pull_request.outputs.pull-request-url }}
       pull_request_operation: ${{ steps.create_pull_request.outputs.pull-request-operation }}
-      translation_token: ${{ secrets.MY_PAT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
