@@ -10,7 +10,7 @@ jobs:
       - name: Cancel previous ongoing build
         uses: styfle/cancel-workflow-action@main
         with:
-          access_token: ${{ secrets.MY_PAT }}
+          access_token: ${{ secrets.GITHUB_TOKEN }}
   lint:
     runs-on: ubuntu-latest
     steps:
