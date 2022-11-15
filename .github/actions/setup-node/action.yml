@@ -1,14 +1,16 @@
-name: Setup node
-description: Setup node to run the workflow
+name: 'Setup node'
+description: 'Set up a common Node version for all the subsequent jobs'
 
 inputs:
   node-version:
-    description: Node Version (Default LTS)
+    description: 'Node version running in your project (Default LTS)'
     required: false
     default: '16'
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - name: Node Setup
-      uses: syltek/frontend-workflows/setup-node@v0
+    - uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
