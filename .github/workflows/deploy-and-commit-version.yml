@@ -29,7 +29,9 @@ jobs:
         id: get_version
         shell: bash
         run: |
-          branch="${{ github.base_ref }}"
+          branch="${GITHUB_REF}"
           sha="${GITHUB_SHA}"
           ver="$(node -p "require('./package.json').version")"
-          echo "::set-output name=version::$ver-$branch-$sha"
+          echo "VERSION=$ver-$branch-$sha" >> $GITHUB_OUTPUT
+      - name: Print version
+        run: echo "The version is ${{ steps.get_version.outputs.VERSION }}"
