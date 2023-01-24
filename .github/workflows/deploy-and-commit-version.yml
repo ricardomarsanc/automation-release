@@ -1,0 +1,37 @@
+name: Deploy and commit
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "develop"
+
+jobs:
+  build:
+    name: Create new version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup-Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run eslint
+      - name: Get version
+        id: get_version
+        shell: bash
+        run: |
+          branch="${GITHUB_REF}"
+          sha="${GITHUB_SHA}"
+          ver="$(node -p "require('./package.json').version")"
+          echo "VERSION=$ver-$branch-$sha" >> $GITHUB_OUTPUT
+      - name: Print version
+        run: echo "The version is ${{ steps.get_version.outputs.VERSION }}"

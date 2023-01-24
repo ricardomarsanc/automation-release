@@ -1,15 +1,16 @@
 name: 'Setup node'
-description: Setup node to run the workflow
+description: 'Set up a common Node version for all the subsequent jobs'
 
 inputs:
   node-version:
-    description: "Node Version"
+    description: 'Node version running in your project (Default LTS)'
     required: false
     default: '16'
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - uses: actions/setup-node@v3
       with:
         node-version: ${{ inputs.node-version }}
+        cache: 'npm'
